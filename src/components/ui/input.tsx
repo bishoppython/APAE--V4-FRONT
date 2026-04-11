@@ -18,10 +18,11 @@ function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
             />
 
             {type === 'password' && (
+                // TODO: Implementar a funcionalidade de mostrar e esconder a senha
                 <button
                     type="button"
                     className={cn(
-                        "bg-secondary/30 text-secondary-foreground absolute top-1/2 -translate-y-1/2 right-0 p-2.5 rounded-2xl mr-5"
+                        "bg-secondary/40 hover:bg-secondary/70 cursor-pointer transition-colors duration-200 text-secondary-foreground absolute top-1/2 -translate-y-1/2 right-0 p-2.5 rounded-2xl mr-5"
                     )}
                 >
                     <EyeIcon className="size-5" />
