@@ -1,7 +1,8 @@
+import Header from "./components/header.tsx";
 function App() {
   return (
-    <div className="text-3xl">
-      hello world
+    <div className="App">
+      <Header />
     </div>
   )
 }
