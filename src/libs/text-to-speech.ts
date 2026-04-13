@@ -10,8 +10,8 @@ interface UseTTSProps {
 export function useTTS({ text, options = {} }: UseTTSProps): UseTTSReturn {
     const {
         lang = 'pt-BR',
-        rate = 1,
-        pitch = 1,
+        rate = 1.1,
+        pitch = 1.2,
         volume = 1,
     } = options
 
@@ -24,8 +24,8 @@ export function useTTS({ text, options = {} }: UseTTSProps): UseTTSReturn {
         highlightText: true,
     })
 
+
     const status = useMemo<TTSStatus>(() => {
-        // mapeia os status da lib para os nossos tipos internos
         const map: Record<string, TTSStatus> = {
             started: 'playing',
             paused: 'paused',

@@ -6,6 +6,7 @@ export interface TTSOptions {
     rate?: number
     pitch?: number
     volume?: number
+    voiceIndex?: number
 }
 
 
