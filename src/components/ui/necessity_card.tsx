@@ -2,15 +2,18 @@ import { cn } from '@/libs/utils';
 import { Volume2 } from 'lucide-react';
 import * as React from 'react';
 
-export function NecessityCardContainer({ children }: React.ComponentProps<'button'>) {
+export function NecessityCardContainer({ children, ...props }: React.ComponentProps<'button'>) {
     return (
-        <div className='relative hover:scale-105 cursor-pointer focus:outline-none focus:ring-3 focus:ring-secondary/60 transition-all duration-300'>
-            <button className={cn(
+        <button
+            className='relative hover:scale-105 rounded-[1.25rem] cursor-pointer focus:outline-none focus:ring-3 focus:ring-secondary/60 transition-all duration-300'
+            {...props}
+        >
+            <div className={cn(
                 'size-60 rounded-[1.25rem] flex flex-col items-center justify-between',
             )}
             >
                 {children}
-            </button>
+            </div>
 
             <span
                 className={cn(
@@ -19,7 +22,7 @@ export function NecessityCardContainer({ children }: React.ComponentProps<'butto
             >
                 <Volume2 className="size-5 stroke-3" />
             </span>
-        </div>
+        </button>
     )
 }
 
