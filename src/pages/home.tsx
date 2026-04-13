@@ -29,6 +29,16 @@ function Home() {
             <Button variant="secundary" isDisabled >
                 Teste
             </Button>
+
+            <div className="flex items-center gap-8 ">
+            <Button variant='tertiary'>
+                Não
+            </Button>
+
+            <Button variant='quaternary'>
+                Sim, deletar permanentemente
+            </Button>
+            </div>
         </div>
     )
 }
