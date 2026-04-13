@@ -17,7 +17,7 @@ function Button({
         <button
             disabled={isDisabled}
             className={cn(
-                'rounded-[10px] cursor-pointer hover:scale-110 transition-all duration-300',
+                'rounded-[10px] cursor-pointer hover:scale-105 transition-all duration-300',
                 'inline-flex items-center px-1 justify-center gap-3',
                 variant === 'primary' && 'w-85 h-15 bg-primary text-2xl',
                 variant === 'secundary' && 'w-60 h-14 text-[14px] border-2 border-secondary/60',
