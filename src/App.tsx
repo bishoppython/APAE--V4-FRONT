@@ -1,9 +1,7 @@
-import { AppRouter } from "./router";
-
 function App() {
   return (
-    <div>
-      <AppRouter />
+    <div className="text-3xl">
+      hello world
     </div>
   )
 }
