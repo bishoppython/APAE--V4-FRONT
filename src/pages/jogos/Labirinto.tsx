@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import mouseImg from "../../assets/images/mouse.png";
-import cheeseImg from "../../assets/images/chesse.png";
+import mouseImg from "../../assets/images/labirinto/mouse.png";
+import cheeseImg from "../../assets/images/labirinto/chesse.png";
 
 // --- Funções Auxiliares (Legado) ---
 function rand(max: number) {

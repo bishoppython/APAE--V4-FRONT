@@ -1,8 +1,3 @@
 @import "tailwindcss";
 
-/* Para configurações globais de css */
-@theme {
-    --color-primary: rgba(252, 211, 19, 1);
-    --color-secondary: rgba(176, 186, 195, 1);
-    --color-secondary-foreground: rgba(0, 0, 0, 0.5);
-}
+:root {}
