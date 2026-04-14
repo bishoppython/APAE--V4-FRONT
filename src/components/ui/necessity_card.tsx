@@ -8,18 +8,11 @@ export function CardContainer({ children, ...props }: React.ComponentProps<'butt
             className='relative hover:scale-105 rounded-[1.25rem] cursor-pointer focus:outline-none focus:ring-3 focus:ring-secondary/60 transition-all duration-300'
             {...props}
         >
-            <div className={cn(
-                'size-60 rounded-[1.25rem] flex flex-col items-center justify-between',
-            )}
-            >
+            <div className={'size-60 rounded-[1.25rem] flex flex-col items-center justify-between'>
                 {children}
             </div>
-
             <span
-                className={cn(
-                    "bg-primary text-white font-extrabold absolute top-7 -translate-y-1/2 right-0 p-2.5 rounded-2xl mr-2"
-                )}
-            >
+                className={"bg-primary text-white font-extrabold absolute top-7 -translate-y-1/2 right-0 p-2.5 rounded-2xl mr-2">
                 <Volume2 className="size-5 stroke-3" />
             </span>
         </button>
