@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User } from 'lucide-react'; 
+import { User } from 'lucide-react';
 
 interface HeaderProps {
   userName?: string;
@@ -10,8 +10,8 @@ const Header: React.FC<HeaderProps> = ({ userName = "Fulano da Silva" }) => {
   const menuItems = ["Crianças", "Jogos", "Conversação"];
 
   return (
-    <header className="flex items-center justify-between px-10 py-6 bg-white shadow-sm font-sans">
-      
+    <header className="flex items-center justify-between px-10 py-4 bg-white shadow-sm font-sans">
+
       <div className="flex items-center gap-3 flex-none">
         <div className="w-10 h-10 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
           <span className="text-[10px] text-gray-400 font-bold">LOGO</span>
@@ -26,14 +26,13 @@ const Header: React.FC<HeaderProps> = ({ userName = "Fulano da Silva" }) => {
         <nav>
           <ul className="flex items-center gap-8">
             {menuItems.map((name) => (
-              <li 
-                key={name} 
+              <li
+                key={name}
                 onClick={() => setActiveItem(name)}
-                className={`cursor-pointer text-base transition-colors hover:text-gray-900 ${
-                  activeItem === name 
-                    ? "text-gray-950 font-bold border-b-2 border-gray-950" 
-                    : "text-gray-600 font-medium"
-                }`}
+                className={`cursor-pointer text-base transition-colors hover:text-gray-900 ${activeItem === name
+                  ? "text-gray-950 font-bold border-b-2 border-gray-950"
+                  : "text-gray-600 font-medium"
+                  }`}
               >
                 {name}
               </li>

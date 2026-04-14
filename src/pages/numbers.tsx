@@ -1,4 +1,5 @@
-import { NumbersContainer, NumbersImage, NumbersTitle} from "@/components/ui/numbers_card";
+import { NumbersContainer, NumbersImage, NumbersTitle } from "@/components/ui/numbers_card";
+import { PageContainer } from "@/components/ui/page_container";
 import { useTTS } from "@/libs/text-to-speech";
 
 interface INumbers {
@@ -50,8 +51,8 @@ const numbers: INumbers[] = [
     }
 ]
 
-function NumberItem({ numbers }: { numbers: INumbers}) {
-    const { play } = useTTS({ text: numbers.title});
+function NumberItem({ numbers }: { numbers: INumbers }) {
+    const { play } = useTTS({ text: numbers.title });
 
     return (
         <NumbersContainer onClick={play}>
@@ -68,12 +69,12 @@ function NumberItem({ numbers }: { numbers: INumbers}) {
 
 export function Numbers() {
     return (
-        <div className="flex flex-col items-center justify-center pt-10">
+        <PageContainer>
             <div className="grid grid-cols-5 gap-8 w-fit">
                 {numbers.map((numbers, index) => (
                     <NumberItem key={index} numbers={numbers} />
                 ))}
             </div>
-        </div>
+        </PageContainer>
     )
 }

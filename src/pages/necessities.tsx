@@ -1,4 +1,5 @@
 import { CardContainer, CardImage, CardTitle } from "@/components/ui/necessity_card";
+import { PageContainer } from "@/components/ui/page_container";
 import { useTTS } from "@/libs/text-to-speech";
 
 interface INecessity {
@@ -75,12 +76,12 @@ function NecessityItem({ necessity }: { necessity: INecessity }) {
 
 export function Necessities() {
     return (
-        <div className="flex flex-col items-center justify-center pt-10">
+        <PageContainer>
             <div className="grid grid-cols-4 gap-8 w-fit">
                 {necessities.map((necessity, index) => (
                     <NecessityItem key={index} necessity={necessity} />
                 ))}
             </div>
-        </div>
+        </PageContainer>
     )
 }

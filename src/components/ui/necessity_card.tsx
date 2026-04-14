@@ -2,31 +2,42 @@ import { cn } from '@/libs/utils';
 import { Volume2 } from 'lucide-react';
 import * as React from 'react';
 
-export function CardContainer({ children, ...props }: React.ComponentProps<'button'>) {
+export function CardContainer({ children, className, ...props }: React.ComponentProps<'button'>) {
     return (
         <button
-            className='relative hover:scale-105 rounded-[1.25rem] cursor-pointer focus:outline-none focus:ring-3 focus:ring-secondary/60 transition-all duration-300'
+            className={cn(
+                'relative hover:scale-105 rounded-[1.25rem] cursor-pointer focus:outline-none focus:ring-3 focus:ring-secondary/60 transition-all duration-300',
+                className
+            )}
             {...props}
         >
-            <div className={'size-60 rounded-[1.25rem] flex flex-col items-center justify-between'>
+            <div className='size-60 rounded-[1.25rem] flex flex-col items-center justify-between'>
                 {children}
             </div>
             <span
-                className={"bg-primary text-white font-extrabold absolute top-7 -translate-y-1/2 right-0 p-2.5 rounded-2xl mr-2">
+                className="bg-primary text-white font-extrabold absolute top-7 -translate-y-1/2 right-0 p-2.5 rounded-2xl mr-2">
                 <Volume2 className="size-5 stroke-3" />
             </span>
         </button>
     )
 }
 
-export function CardImage({ src, alt }: React.ComponentProps<'img'>) {
-    return <div className='rounded-t-[1.25rem] flex justify-center items-center overflow-hidden'>
-        <img src={src} alt={alt} />
+export function CardImage({ src, alt, className, ...input }: React.ComponentProps<'img'>) {
+    return <div className={cn(
+        'rounded-t-[1.25rem] flex justify-center items-center overflow-hidden',
+        className
+    )}>
+        <img src={src} alt={alt} {...input} />
     </div>
 }
 
-export function CardTitle({ children }: React.ComponentProps<'h1'>) {
-    return <div className='w-full bg-primary text-white font-semibold text-center rounded-b-[1.25rem] h-12 flex items-center justify-center text-xl'>
-        {children}
+export function CardTitle({ children, className, ...input }: React.ComponentProps<'h1'>) {
+    return <div className={cn(
+        'w-full bg-primary text-white font-semibold text-center rounded-b-[1.25rem] h-12 flex items-center justify-center text-xl',
+        className
+    )}>
+        <h1 {...input}>
+            {children}
+        </h1>
     </div>
 }
