@@ -2,7 +2,7 @@ import { cn } from '@/libs/utils';
 import { Volume2 } from 'lucide-react';
 import * as React from 'react';
 
-export function NecessityCardContainer({ children, ...props }: React.ComponentProps<'button'>) {
+export function CardContainer({ children, ...props }: React.ComponentProps<'button'>) {
     return (
         <button
             className='relative hover:scale-105 rounded-[1.25rem] cursor-pointer focus:outline-none focus:ring-3 focus:ring-secondary/60 transition-all duration-300'
@@ -26,13 +26,13 @@ export function NecessityCardContainer({ children, ...props }: React.ComponentPr
     )
 }
 
-export function NecessityCardImage({ src, alt }: React.ComponentProps<'img'>) {
+export function CardImage({ src, alt }: React.ComponentProps<'img'>) {
     return <div className='rounded-t-[1.25rem] flex justify-center items-center overflow-hidden'>
         <img src={src} alt={alt} />
     </div>
 }
 
-export function NecessityCardTitle({ children }: React.ComponentProps<'h1'>) {
+export function CardTitle({ children }: React.ComponentProps<'h1'>) {
     return <div className='w-full bg-primary text-white font-semibold text-center rounded-b-[1.25rem] h-12 flex items-center justify-center text-xl'>
         {children}
     </div>

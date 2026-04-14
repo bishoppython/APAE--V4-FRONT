@@ -1,4 +1,4 @@
-import { NecessityCardContainer, NecessityCardImage, NecessityCardTitle } from "@/components/ui/necessity_card";
+import { CardContainer, CardImage, CardTitle } from "@/components/ui/necessity_card";
 import { useTTS } from "@/libs/text-to-speech";
 
 interface INecessity {
@@ -61,15 +61,15 @@ function NecessityItem({ necessity }: { necessity: INecessity }) {
     const { play } = useTTS({ text: necessity.title });
 
     return (
-        <NecessityCardContainer onClick={play}>
-            <NecessityCardImage
+        <CardContainer onClick={play}>
+            <CardImage
                 src={necessity.image}
                 alt={necessity.title}
             />
-            <NecessityCardTitle>
+            <CardTitle>
                 {necessity.title}
-            </NecessityCardTitle>
-        </NecessityCardContainer>
+            </CardTitle>
+        </CardContainer>
     );
 }
 
