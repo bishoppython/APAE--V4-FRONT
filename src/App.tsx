@@ -1,10 +1,7 @@
-import Header from "./components/header.tsx";
+import { AppRoutes } from "./routes/AppRoutes";
+
 function App() {
-  return (
-    <div className="App">
-      <Header />
-    </div>
-  )
+  return <AppRoutes />;
 }
 
 export default App
