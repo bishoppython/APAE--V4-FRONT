@@ -23,7 +23,6 @@ function MainLayout() {
 export function AppRouter() {
     return (
         <BrowserRouter>
-            <Header />
             <Routes>
                 <Route element={<MainLayout />}>
                     <Route path="/" element={<Home />} />

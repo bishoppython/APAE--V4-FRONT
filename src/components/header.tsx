@@ -16,21 +16,19 @@ const Header: React.FC<HeaderProps> = ({ userName = "Fulano da Silva" }) => {
   ];
 
   return (
-    <header className="flex items-center justify-between px-10 py-4 bg-white shadow-sm font-sans">
+    <header className="flex flex-col md:flex-row items-center gap-3 md:gap-0 justify-between px-4 sm:px-10 py-2 bg-white shadow-sm font-sans">
 
-      <div className="flex items-center gap-3 flex-none">
-        <div className="w-10 h-10 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-          <span className="text-[10px] text-gray-400 font-bold">LOGO</span>
-        </div>
-
+      <div className="flex items-center gap-2 flex-none">
+        <img src="icon.svg" alt="Logo" className="size-12" />
         <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
           NeuroKids
         </h1>
       </div>
 
-      <div className="flex items-center gap-12">
+
+      <div className="flex items-center gap-6 md:gap-12">
         <nav>
-          <ul className="flex items-center gap-8">
+          <ul className="flex items-center gap-4 md:gap-8">
             {menuItems.map((item, index) => (
               <Link
                 key={index}
@@ -49,13 +47,14 @@ const Header: React.FC<HeaderProps> = ({ userName = "Fulano da Silva" }) => {
           </ul>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="hidden sm:flex items-center gap-3">
           <span className="text-sm font-medium text-gray-700">{userName}</span>
           <div className="p-1.5 bg-gray-100 rounded-full text-gray-500">
             <User className="w-5 h-5" strokeWidth={1.5} />
           </div>
         </div>
       </div>
+
     </header>
   );
 };

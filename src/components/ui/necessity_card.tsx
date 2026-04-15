@@ -2,11 +2,22 @@ import { cn } from '@/libs/utils';
 import { Volume2 } from 'lucide-react';
 import * as React from 'react';
 
+export function CardGroupContainer({ children, className }: React.ComponentProps<'div'>) {
+    return (
+        <div className={cn(
+            'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8',
+            className
+        )}>
+            {children}
+        </div>
+    )
+}
+
 export function CardContainer({ children, className, ...props }: React.ComponentProps<'button'>) {
     return (
         <button
             className={cn(
-                'relative hover:scale-105 rounded-[1.25rem] cursor-pointer focus:outline-none focus:ring-3 focus:ring-secondary/60 transition-all duration-300',
+                'relative m-auto hover:scale-105 rounded-[1.25rem] cursor-pointer focus:outline-none focus:ring-3 focus:ring-secondary/60 transition-all duration-300',
                 className
             )}
             {...props}
