@@ -2,8 +2,8 @@ import { cn } from "@/libs/utils";
 import * as React from 'react';
 import { Link } from "react-router-dom";
 interface FooterProps {
-  nome: string;
-  ano: number;
+  name: string;
+  year: number;
 }
 interface FooterLinkProps {
   href: string;
@@ -40,16 +40,16 @@ function FooterLink({ href, children, classname }: FooterLinkProps) {
   )
 }
 
-function Footer({ nome, ano }: FooterProps) {
+function Footer({ name, year }: FooterProps) {
   return (
     <footer className="w-full border-t border-white/10 bg-black px-4 py-10 font-['Quicksand',sans-serif] text-[#ACACAC]">
       <div className="mx-auto grid max-w-6xl gap-2 text-center sm:grid-cols-2 sm:text-left lg:grid-cols-4 ">
         <div>
           <h2 className="text-2xl font-['Poppins',sans-serif] font-semibold text-white">
-            {nome}
+            {name}
           </h2>
           <p className="mt-3 text-xs leading-5 text-zinc-400">
-            &copy; {ano}. Todos os direitos reservados.
+            &copy; {year}. Todos os direitos reservados.
           </p>
         </div>
 
