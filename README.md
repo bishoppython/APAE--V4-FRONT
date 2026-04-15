@@ -9,7 +9,7 @@ Siga os passos abaixo para preparar seu ambiente e rodar o projeto localmente:
 ### 1. Clonar o Repositório
 Abra o terminal e execute:
 ```bash
-git clone https://github.com/nadson/APAE--V4-FRONT.git
+git clone https://github.com/Team-NeuroKids/APAE--V4-FRONT
 ```
 
 ### 2. Instalar Dependências
