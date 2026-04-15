@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { PageContainer } from "@/components/ui/page_container"
 
-function Teste() {
+function Test() {
     return (
         <PageContainer>
             <Button variant="primary">
@@ -33,4 +33,4 @@ function Teste() {
     )
 }
 
-export default Teste
+export { Test }

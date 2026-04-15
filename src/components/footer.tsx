@@ -1,6 +1,43 @@
+import { cn } from "@/libs/utils";
+import * as React from 'react';
+import { Link } from "react-router-dom";
 interface FooterProps {
   nome: string;
   ano: number;
+}
+interface FooterLinkProps {
+  href: string;
+  children: React.ReactNode;
+  classname?: string;
+}
+
+interface FooterLinkGroupProps {
+  children: React.ReactNode;
+  title: string;
+  classname?: string;
+}
+
+function FooterLinkGroup({ children, title }: FooterLinkGroupProps) {
+  return (
+    <nav aria-label={title} className="space-y-2">
+      <h3 className="text-sm font-semibold text-zinc-300 pb-5">{title}</h3>
+      {children}
+    </nav>
+  )
+}
+
+function FooterLink({ href, children, classname }: FooterLinkProps) {
+  return (
+    <Link
+      to={href}
+      className={cn(
+        "block text-sm transition-colors hover:text-white",
+        classname
+      )}
+    >
+      {children}
+    </Link>
+  )
 }
 
 function Footer({ nome, ano }: FooterProps) {
@@ -16,47 +53,21 @@ function Footer({ nome, ano }: FooterProps) {
           </p>
         </div>
 
-        <nav aria-label="Recursos" className="space-y-2">
-            <h3 className="text-sm font-semibold text-zinc-300 pb-5">Recursos</h3>
-          <a
-            href="#"
-            className="block text-sm transition-colors hover:text-white"
-          >
-            Jogos
-          </a>
-          <a
-            href="#"
-            className="block text-sm transition-colors hover:text-white"
-          >
-            Conversação
-          </a>
-          <a
-            href="#"
-            className="block text-sm transition-colors hover:text-white"
-          >
-            Dashboard
-          </a>
-        </nav>
+        <FooterLinkGroup title="Navegação">
+          <FooterLink href="/criancas">Crianças</FooterLink>
+          <FooterLink href="/conversacao">Conversação</FooterLink>
+          <FooterLink href="/jogos">Jogos</FooterLink>
+          <FooterLink href="/dashboard">Dashboard</FooterLink>
+        </FooterLinkGroup>
 
-        <nav aria-label="Suporte" className="space-y-2">
-          <h3 className="text-sm font-semibold text-zinc-300 pb-5">Suporte</h3>
-          <a
-            href="#"
-            className="block text-sm transition-colors hover:text-white"
-          >
-            Fale Conosco
-          </a>
-        </nav>
+        <FooterLinkGroup title="Suporte">
+          <FooterLink href="/contato">Fale Conosco</FooterLink>
+        </FooterLinkGroup>
 
-        <nav aria-label="Links" className="space-y-2">
-          <h3 className="text-sm font-semibold text-zinc-300 pb-5">Links Úteis</h3>
-          <a
-            href="#"
-            className="block text-sm transition-colors hover:text-white"
-          >
-            Sobre nós
-          </a>
-        </nav>
+        <FooterLinkGroup title="Links Úteis">
+          <FooterLink href="/sobre">Sobre nós</FooterLink>
+        </FooterLinkGroup>
+
       </div>
     </footer>
   );

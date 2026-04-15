@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { User } from 'lucide-react';
+import { cn } from '@/libs/utils';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   userName?: string;
@@ -7,7 +9,11 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ userName = "Fulano da Silva" }) => {
   const [activeItem, setActiveItem] = useState("Crianças");
-  const menuItems = ["Crianças", "Jogos", "Conversação"];
+  const menuItems = [
+    { name: "Crianças", href: "/criancas" },
+    { name: "Jogos", href: "/jogos" },
+    { name: "Conversação", href: "/conversacao" }
+  ];
 
   return (
     <header className="flex items-center justify-between px-10 py-4 bg-white shadow-sm font-sans">
@@ -25,17 +31,20 @@ const Header: React.FC<HeaderProps> = ({ userName = "Fulano da Silva" }) => {
       <div className="flex items-center gap-12">
         <nav>
           <ul className="flex items-center gap-8">
-            {menuItems.map((name) => (
-              <li
-                key={name}
-                onClick={() => setActiveItem(name)}
-                className={`cursor-pointer text-base transition-colors hover:text-gray-900 ${activeItem === name
-                  ? "text-gray-950 font-bold border-b-2 border-gray-950"
-                  : "text-gray-600 font-medium"
-                  }`}
+            {menuItems.map((item, index) => (
+              <Link
+                key={index}
+                to={item.href}
+                onClick={() => setActiveItem(item.name)}
+                className={cn(
+                  `cursor-pointer text-base transition-colors hover:text-gray-900`,
+                  activeItem === item.name
+                    ? "text-gray-950 font-bold border-b-2 border-gray-950"
+                    : "text-gray-600 font-medium"
+                )}
               >
-                {name}
-              </li>
+                {item.name}
+              </Link>
             ))}
           </ul>
         </nav>
