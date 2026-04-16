@@ -1,4 +1,4 @@
-import { NumbersContainer, NumbersImage, NumbersTitle } from "@/components/ui/numbers_card";
+import { CardContainer, CardGroupContainer, CardImage, CardTitle } from "@/components/ui/cards";
 import { PageContainer } from "@/components/ui/page_container";
 import { useTTS } from "@/libs/text-to-speech";
 
@@ -55,26 +55,26 @@ function NumberItem({ numbers }: { numbers: INumbers }) {
     const { play } = useTTS({ text: numbers.title });
 
     return (
-        <NumbersContainer onClick={play}>
-            <NumbersImage
+        <CardContainer onClick={play}>
+            <CardImage
                 src={numbers.image}
                 alt={numbers.title}
             />
-            <NumbersTitle>
+            <CardTitle>
                 {numbers.title}
-            </NumbersTitle>
-        </NumbersContainer>
+            </CardTitle>
+        </CardContainer>
     );
 }
 
 export function Numbers() {
     return (
         <PageContainer>
-            <div className="grid grid-cols-5 gap-8 w-fit">
+           <CardGroupContainer className= 'xl:grid-cols-5'>
                 {numbers.map((numbers, index) => (
                     <NumberItem key={index} numbers={numbers} />
                 ))}
-            </div>
+            </CardGroupContainer>
         </PageContainer>
     )
 }

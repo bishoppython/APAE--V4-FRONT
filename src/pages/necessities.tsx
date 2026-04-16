@@ -1,4 +1,4 @@
-import { CardContainer, CardGroupContainer, CardImage, CardTitle } from "@/components/ui/necessity_card";
+import { CardContainer, CardGroupContainer, CardImage, CardTitle } from "@/components/ui/cards";
 import { PageContainer } from "@/components/ui/page_container";
 import { useTTS } from "@/libs/text-to-speech";
 
