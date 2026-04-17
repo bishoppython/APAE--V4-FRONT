@@ -632,7 +632,7 @@ export default function Labirinto() {
               { val: 25, label: 'Difícil' },
               { val: 38, label: 'Extremo' }
             ].map((op) => (
-              <label key={op.val} className={`flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all ${tamanho === op.val ? 'border-blue-600 bg-blue-50 transform scale-105 shadow-sm' : 'border-gray-200 hover:bg-gray-50'}`}>
+              <label key={op.val} className={`flex flex-col items-center justify-center p-4 border-2 rounded-xl cursor-pointer transition-all ${tamanho === op.val ? 'border-green-500 bg-green-50 transform scale-105 shadow-sm' : 'border-gray-200 hover:bg-gray-50'}`}>
                 <input 
                   name="value-radio" 
                   type="radio" 
@@ -640,8 +640,8 @@ export default function Labirinto() {
                   checked={tamanho === op.val}
                   onChange={() => setTamanho(op.val)}
                 />
-                <span className={`font-semibold text-lg ${tamanho === op.val ? 'text-blue-700' : 'text-gray-600'}`}>{op.label}</span>
-                <span className={`text-xs mt-1 ${tamanho === op.val ? 'text-blue-500' : 'text-gray-400'}`}>{op.val}x{op.val}</span>
+                <span className={`font-semibold text-lg ${tamanho === op.val ? 'text-green-700' : 'text-gray-600'}`}>{op.label}</span>
+                <span className={`text-xs mt-1 ${tamanho === op.val ? 'text-green-500' : 'text-gray-400'}`}>{op.val}x{op.val}</span>
               </label>
             ))}
           </div>
@@ -650,7 +650,7 @@ export default function Labirinto() {
             type="button" 
             onClick={makeMaze}
             disabled={!spritesLoaded}
-            className={`w-full font-bold py-4 px-4 rounded-xl text-lg transition-colors cursor-pointer ${spritesLoaded ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+            className={`w-full font-bold py-4 px-4 rounded-xl text-lg transition-colors cursor-pointer ${spritesLoaded ? 'bg-green-500 hover:bg-green-600 text-white shadow-md hover:shadow-lg' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
           >
             {spritesLoaded ? 'Iniciar Jogo' : 'Carregando recursos...'}
           </button>
@@ -698,12 +698,12 @@ export default function Labirinto() {
             </svg>
           </div>
           <h2 className="text-4xl font-extrabold text-green-600 mb-4">Você Venceu!</h2>
-          <p className="text-xl text-gray-700 mb-2">Parabéns! Você encontrou o queijo em <span className="font-bold text-2xl text-blue-600">{moves}</span> movimentos.</p>
+          <p className="text-xl text-gray-700 mb-2">Parabéns! Você encontrou o queijo em <span className="font-bold text-2xl text-green-600">{moves}</span> movimentos.</p>
           <p className="text-md text-gray-500 mb-8">O caminho ideal tinha exatos <span className="font-semibold text-gray-700">{minMoves}</span> passos.</p>
           <button 
             type="button" 
             onClick={backToMenu}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
+            className="w-full bg-green-500 hover:bg-green-600 text-white cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
           >
             Jogar Novamente
           </button>
@@ -723,7 +723,7 @@ export default function Labirinto() {
           <button 
             type="button" 
             onClick={backToMenu}
-            className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer text-white font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
+            className="w-full bg-green-500 hover:bg-green-600 cursor-pointer text-white font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
           >
             Voltar para o Menu
           </button>

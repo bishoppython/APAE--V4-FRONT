@@ -10,44 +10,44 @@ interface INumbers {
 const numbers: INumbers[] = [
     {
         title: "UM",
-        image: 'placeholder.jpg',
+        image: 'Um.png',
     },
     {
         title: 'DOIS',
-        image: 'placeholder.jpg',
+        image: 'Dois.png',
 
     },
     {
         title: 'TRÊS',
-        image: 'placeholder.jpg',
+        image: 'Tres.png',
     },
     {
         title: 'QUATRO',
-        image: 'placeholder.jpg',
+        image: 'Quatro.png',
     },
     {
         title: 'CINCO',
-        image: 'placeholder.jpg',
+        image: 'Cinco.png',
     },
     {
         title: 'SEIS',
-        image: 'placeholder.jpg',
+        image: 'Seis.png',
     },
     {
         title: 'SETE',
-        image: 'placeholder.jpg',
+        image: 'Sete.png',
     },
     {
         title: 'OITO',
-        image: 'placeholder.jpg',
+        image: 'Oito.png',
     },
     {
         title: 'NOVE',
-        image: 'placeholder.jpg',
+        image: 'Nove.png',
     },
     {
         title: 'ZERO',
-        image: 'placeholder.jpg'
+        image: 'Zero.png'
     }
 ]
 
@@ -57,7 +57,7 @@ function NumberItem({ numbers }: { numbers: INumbers }) {
     return (
         <CardContainer onClick={play}>
             <CardImage
-                src={numbers.image}
+                src={`/src/assets/images/numeros/${numbers.image}`}
                 alt={numbers.title}
             />
             <CardTitle>
@@ -70,7 +70,7 @@ function NumberItem({ numbers }: { numbers: INumbers }) {
 export function Numbers() {
     return (
         <PageContainer>
-           <CardGroupContainer className= 'xl:grid-cols-5'>
+            <CardGroupContainer className='xl:grid-cols-5'>
                 {numbers.map((numbers, index) => (
                     <NumberItem key={index} numbers={numbers} />
                 ))}
