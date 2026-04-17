@@ -35,9 +35,9 @@ export function AppRouter() {
                     <Route path="/soletrando" element={<Soletrando />} />
                     <Route path="/necessidades" element={<Necessities />} />
                     <Route path="/numeros" element={<Numbers />} />
+                    <Route path="/memoria" element={<Memoria />} />
                 </Route>
 
-                {/* Rotas fora do layout principal */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/login-crianca" element={<ChildLogin />} />
                 <Route path="*" element={<NotFound />} />
