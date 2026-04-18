@@ -13,13 +13,15 @@ export function CardGroupContainer({ children, className }: React.ComponentProps
     )
 }
 
-export function CardContainer({ children, className, ...props }: React.ComponentProps<'button'>) {
+export function CardContainer({ children, className, isDisabled, ...props }: React.ComponentProps<'button'> & { isDisabled?: boolean }) {
     return (
         <button
             className={cn(
                 'relative m-auto hover:scale-105 rounded-[1.25rem] cursor-pointer focus:outline-none focus:ring-3 focus:ring-secondary/60 transition-all duration-300',
+                isDisabled ? 'cursor-not-allowed opacity-60 hover:scale-100' : 'cursor-pointer',
                 className
             )}
+            disabled={isDisabled}
             {...props}
         >
             <div className='size-60 rounded-[1.25rem] flex flex-col items-center justify-between'>

@@ -1,5 +1,5 @@
 import { CardContainer, CardGroupContainer, CardImage, CardTitle } from "@/components/ui/cards";
-import { PageContainer } from "@/components/ui/page_container";
+import { PageContainer, PageTitle } from "@/components/ui/page_components";
 import { useTTS } from "@/libs/text-to-speech";
 
 interface INumbers {
@@ -70,6 +70,8 @@ function NumberItem({ numbers }: { numbers: INumbers }) {
 export function Numbers() {
     return (
         <PageContainer>
+            <PageTitle>NÚMEROS</PageTitle>
+
             <CardGroupContainer className='xl:grid-cols-5'>
                 {numbers.map((numbers, index) => (
                     <NumberItem key={index} numbers={numbers} />

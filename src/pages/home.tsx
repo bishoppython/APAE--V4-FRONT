@@ -1,9 +1,9 @@
-import { PageContainer } from "@/components/ui/page_container";
+import { PageContainer, PageTitle } from "@/components/ui/page_components";
 
 export default function Home() {
   return (
     <PageContainer>
-      <h1 className="text-2xl font-bold">Página Inicial (Home)</h1>
+      <PageTitle>PÁGINA INICIAL (HOME)</PageTitle>
     </PageContainer>
   );
 }

@@ -1,9 +1,9 @@
-import { PageContainer } from "@/components/ui/page_container";
+import { PageContainer, PageTitle } from "@/components/ui/page_components";
 
 export default function ChildLogin() {
     return (
         <PageContainer>
-            <h1 className="text-2xl font-bold">Página de Login da Criança</h1>
+            <PageTitle>PÁGINA DE LOGIN DA CRIANÇA</PageTitle>
         </PageContainer>
     );
 }

@@ -1,9 +1,9 @@
-import { PageContainer } from "@/components/ui/page_container";
+import { PageContainer, PageTitle } from "@/components/ui/page_components";
 
 export function NotFound() {
     return (
         <PageContainer>
-            <h1 className="text-2xl font-bold">Você está perdido!</h1>
+            <PageTitle>PÁGINA NÃO ENCONTRADA</PageTitle>
         </PageContainer>
     );
 }

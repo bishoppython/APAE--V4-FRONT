@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { PageContainer } from "@/components/ui/page_container"
+import { PageContainer } from "@/components/ui/page_components"
 
 function Test() {
     return (

@@ -13,6 +13,7 @@ import Soletrando from "@/pages/jogos/Soletrando";
 import Home from "@/pages/home";
 import Footer from "./components/footer";
 import ChildLogin from "./pages/child_login";
+import { ColorMixer } from "./pages/color_mixer";
 
 function MainLayout() {
     return (
@@ -35,6 +36,7 @@ export function AppRouter() {
                     <Route path="/soletrando" element={<Soletrando />} />
                     <Route path="/necessidades" element={<Necessities />} />
                     <Route path="/numeros" element={<Numbers />} />
+                    <Route path="/misturando-cores" element={<ColorMixer />} />
                     <Route path="/memoria" element={<Memoria />} />
                 </Route>
 
