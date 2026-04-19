@@ -14,7 +14,7 @@ export function PageContainer({ children, className }: React.ComponentProps<'div
 export function PageTitle({ children, className, ...input }: React.ComponentProps<'h1'>) {
     return (
         <h1 className={cn(
-            'text-[3.25rem] font-extrabold',
+            'text-[2.5rem] md:text-[3.25rem] text-center font-extrabold',
             className
         )} {...input}>
             {children}

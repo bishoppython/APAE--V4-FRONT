@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import { Necessities } from "@/pages/conversacao/necessities";
-import { Numbers } from "@/pages/conversacao/numbers";
+import { Necessities } from "@/pages/conversation/necessities";
+import { Numbers } from "@/pages/conversation/numbers";
 import Header from "./components/header";
 import { Test } from "@/pages/teste";
 import { NotFound } from "./pages/not_found";
@@ -18,7 +18,6 @@ import { ColorMixer } from "./pages/conversation/color_mixer";
 import Memoria from "./pages/jogos/Memoria";
 import { Colors } from "./pages/conversation/colors";
 import { Animals } from "./pages/conversation/animals";
-import { ColorMixer } from "./pages/conversacao/color_mixer";
 
 function MainLayout() {
     return (

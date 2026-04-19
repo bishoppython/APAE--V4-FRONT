@@ -200,7 +200,7 @@ export function Animals() {
         <PageContainer className='transition-all duration-1000'>
             <PageTitle>ANIMAIS</PageTitle>
 
-            <div className="flex justify-evenly items-center gap-4 mb-8">
+            <ButtonGroup>
                 <Button
                     title="Selva"
                     variant="tertiary"
@@ -245,7 +245,7 @@ export function Animals() {
                 >
                     Fazenda
                 </Button>
-            </div>
+            </ButtonGroup>
 
             <CardGroupContainer className={cn(
                 "transition-all duration-500",

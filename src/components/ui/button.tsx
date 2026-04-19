@@ -8,6 +8,12 @@ interface IButtonProps extends React.ComponentProps<'button'> {
     isDisabled?: boolean;
 }
 
+function ButtonGroup({ children }: React.ComponentProps<'div'>) {
+    return <div className="flex flex-col md:flex-row justify-evenly items-center gap-4 mb-8">
+        {children}
+    </div>
+}
+
 function Button({
     children,
     className,
@@ -45,4 +51,4 @@ function Button({
     );
 }
 
-export { Button };
+export { Button, ButtonGroup };

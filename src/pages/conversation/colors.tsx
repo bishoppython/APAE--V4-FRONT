@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, ButtonGroup } from "@/components/ui/button";
 import {
     CardContainer,
     CardGroupContainer,
@@ -142,7 +142,7 @@ export function Colors() {
         <PageContainer className='transition-all duration-1000'>
             <PageTitle>CORES</PageTitle>
 
-            <div className="flex justify-evenly items-center gap-8 mb-8">
+            <ButtonGroup>
                 <Button
                     title="Cores Primárias"
                     variant="primary"
@@ -167,7 +167,7 @@ export function Colors() {
                 >
                     Cores Terciárias
                 </Button>
-            </div>
+            </ButtonGroup>
 
             <CardGroupContainer className={cn(
                 activeCategory === 'primary' && 'xl:grid-cols-3',
