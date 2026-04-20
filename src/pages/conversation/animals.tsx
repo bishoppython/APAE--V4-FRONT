@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, ButtonGroup } from "@/components/ui/button";
 import {
     CardContainer,
     CardGroupContainer,
@@ -200,7 +200,7 @@ export function Animals() {
         <PageContainer className='transition-all duration-1000'>
             <PageTitle>ANIMAIS</PageTitle>
 
-            <ButtonGroup>
+            <ButtonGroup className="sm:flex-row">
                 <Button
                     title="Selva"
                     variant="tertiary"

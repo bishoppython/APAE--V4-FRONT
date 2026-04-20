@@ -35,12 +35,12 @@ export function CardContainer({ children, className, isDisabled, ...props }: Rea
     )
 }
 
-export function CardImage({ src, alt, className, ...input }: React.ComponentProps<'img'>) {
+export function CardImage({ src, alt, className }: React.ComponentProps<'img'>) {
     return <div className={cn(
         'w-full flex-1 rounded-t-[1.25rem] flex justify-center items-center overflow-hidden',
         className
     )}>
-        <img src={src} alt={alt} className="w-full h-full object-cover" {...input} />
+        <img src={src} alt={alt} />
     </div>
 }
 

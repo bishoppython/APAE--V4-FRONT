@@ -1,6 +1,6 @@
 import { CardContainer, CardGroupContainer, CardImage, CardTitle } from "@/components/ui/cards";
 import { PageContainer, PageTitle } from "@/components/ui/page_components";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import { useTTS } from "@/libs/text-to-speech";
 
@@ -51,7 +51,7 @@ function Color({ colors, onSelect }: { colors: IColor, onSelect: (id: string) =>
     return (
         <CardContainer onClick={handleClick} value={colors.id}>
             <CardImage
-                className={`${colors.color} w-full h-full`}
+                className={`${colors.color}`}
             />
             <CardTitle>
                 {colors.title}

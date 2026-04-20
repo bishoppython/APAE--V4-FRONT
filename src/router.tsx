@@ -1,23 +1,23 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import { Necessities } from "@/pages/conversation/necessities";
-import { Numbers } from "@/pages/conversation/numbers";
+
 import Header from "./components/header";
-import { Test } from "@/pages/teste";
-import { NotFound } from "./pages/not_found";
-import Login from "@/pages/login";
-
-//Jogos
-import Labirinto from "@/pages/jogos/Labirinto";
-import Soletrando from "@/pages/jogos/Soletrando";
-import Memoria from "@/pages/jogos/Memoria";
-
-import Home from "@/pages/home";
 import Footer from "./components/footer";
+
+import { NotFound } from "./pages/not_found";
 import ChildLogin from "./pages/child_login";
-import { ColorMixer } from "./pages/conversation/color_mixer";
-import Memoria from "./pages/jogos/Memoria";
-import { Colors } from "./pages/conversation/colors";
-import { Animals } from "./pages/conversation/animals";
+import { Test } from "@/pages/teste";
+import Login from "@/pages/login";
+import Home from "@/pages/home";
+
+import { Necessities } from "@/pages/conversation/necessities";
+import { ColorMixer } from "@/pages/conversation/color_mixer";
+import { Numbers } from "@/pages/conversation/numbers";
+import { Animals } from "@/pages/conversation/animals";
+import { Colors } from "@/pages/conversation/colors";
+
+import Soletrando from "@/pages/jogos/Soletrando";
+import Labirinto from "@/pages/jogos/Labirinto";
+import Memoria from "@/pages/jogos/Memoria";
 
 function MainLayout() {
     return (
