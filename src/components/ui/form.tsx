@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { cn } from '@/libs/utils';
-import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, ChevronDown, Check } from 'lucide-react';
+import * as SelectPrimitive from "@radix-ui/react-select";
 import {
     Controller,
     type ControllerProps,
@@ -60,6 +61,17 @@ export function FormContainer({ children, className, ...props }: React.Component
         >
             {children}
         </form>
+    );
+}
+
+export function FormFieldGroup({ children, className, ...props }: React.ComponentProps<'form'>) {
+    return (
+        <section
+            className={cn("grid grid-cols-1 xl:grid-cols-2 gap-x-10 gap-y-2", className)}
+            {...props}
+        >
+            {children}
+        </section>
     );
 }
 
@@ -151,7 +163,7 @@ export function Input({ className, type, ...props }: React.ComponentProps<'input
                 aria-describedby={error ? errorId : undefined}
                 data-slot="input"
                 className={cn(
-                    'bg-secondary/30 text-xl text-secondary-foreground rounded-[1.25rem] w-140 h-16 pl-10',
+                    'bg-secondary/30 text-xl text-secondary-foreground rounded-[1.25rem] w-140 h-16 px-10',
                     'focus:outline-none focus:ring-3 focus:ring-secondary/60',
                     error && 'ring-2 ring-red-500',
                     className
@@ -178,5 +190,63 @@ export function Input({ className, type, ...props }: React.ComponentProps<'input
                 </button>
             )}
         </div>
+    );
+}
+
+export function Select({
+    options,
+    placeholder,
+    className,
+    ...props
+}: React.ComponentProps<typeof SelectPrimitive.Root> & {
+    options: { label: string; value: string }[],
+    placeholder?: string,
+    className?: string
+}) {
+    return (
+        <SelectPrimitive.Root {...props}>
+            <SelectPrimitive.Trigger
+                className={cn(
+                    'flex items-center justify-between gap-6 bg-secondary/30 text-xl text-secondary-foreground rounded-[1.25rem] w-140 h-16 px-8',
+                    'focus:outline-none focus:ring-3 focus:ring-secondary/60 transition-all text-left',
+                    className
+                )}
+            >
+                <SelectPrimitive.Value placeholder={placeholder} />
+                <SelectPrimitive.Icon>
+                    <ChevronDown className="size-5 opacity-50" />
+                </SelectPrimitive.Icon>
+            </SelectPrimitive.Trigger>
+
+            <SelectPrimitive.Portal>
+                <SelectPrimitive.Content
+                    className="mt-18 overflow-hidden bg-primary text-secondary-foreground rounded-2xl shadow-xl min-w-(--radix-select-trigger-)"
+                >
+                    <SelectPrimitive.Viewport className="p-2">
+                        {options.map((opt, index) => (
+                            <React.Fragment key={opt.value}>
+                                <SelectPrimitive.Item
+                                    key={opt.value}
+                                    value={opt.value}
+                                    className={cn(
+                                        "relative flex w-full cursor-pointer select-none border-black/5 items-center rounded-xl py-3 px-8 text-lg outline-none",
+                                        "focus:bg-yellow-400 data-disabled:pointer-events-none data-disabled:opacity-50"
+                                    )}
+                                >
+                                    <SelectPrimitive.ItemText>{opt.label}</SelectPrimitive.ItemText>
+                                    <SelectPrimitive.ItemIndicator className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                                        <Check className="size-4" />
+                                    </SelectPrimitive.ItemIndicator>
+                                </SelectPrimitive.Item>
+
+                                {index < options.length - 1 && (
+                                    <SelectPrimitive.Separator className="m-auto h-0.5 w-[90%] bg-yellow-400 my-1" />
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </SelectPrimitive.Viewport>
+                </SelectPrimitive.Content>
+            </SelectPrimitive.Portal>
+        </SelectPrimitive.Root>
     );
 }

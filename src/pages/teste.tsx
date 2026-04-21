@@ -1,34 +1,10 @@
-import { Button } from "@/components/ui/button"
+import { ChildRegistrationForm } from "@/components/forms/create_child_form"
 import { PageContainer } from "@/components/ui/page_components"
 
 function Test() {
     return (
         <PageContainer>
-            <Button variant="primary">
-                Teste
-            </Button>
-
-            <Button variant="secundary">
-                Teste
-            </Button>
-
-            <Button variant="primary" isDisabled >
-                Enviar
-            </Button>
-
-            <Button variant="secundary" isDisabled >
-                Teste
-            </Button>
-
-            <div className="flex items-center gap-8 ">
-                <Button variant='tertiary'>
-                    Não
-                </Button>
-
-                <Button variant='quaternary'>
-                    Sim, deletar permanentemente
-                </Button>
-            </div>
+            <ChildRegistrationForm />
         </PageContainer>
     )
 }
