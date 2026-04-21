@@ -16,7 +16,7 @@ interface IAnimal extends React.ComponentProps<'button'> {
     image: string;
 }
 
-const selva_animals: IAnimal[] = [
+const jungle_animals: IAnimal[] = [
     {
         id: 'leao',
         title: "Leão",
@@ -49,7 +49,7 @@ const selva_animals: IAnimal[] = [
     }
 ];
 
-const domestico_animals: IAnimal[] = [
+const domestic_animals: IAnimal[] = [
     {
         id: 'cachorro',
         title: "Cachorro",
@@ -81,32 +81,32 @@ const mar_animals: IAnimal[] = [
     {
         id: 'baleia',
         title: "Baleia",
-        image: "src/assets/images/soletrando/"
+        image: "src/assets/images/soletrando/baleia.png"
     },
     {
         id: 'tubarao',
         title: "Tubarão",
-        image: "src/assets/images/soletrando/"
+        image: "src/assets/images/soletrando/tubarao.png"
     },
     {
         id: 'estrela_mar',
         title: "Estrela do Mar",
-        image: "src/assets/images/soletrando/"
+        image: "src/assets/images/soletrando/estrela_do_mar.png"
     },
     {
         id: 'polvo',
         title: "Polvo",
-        image: "src/assets/images/soletrando/"
+        image: "src/assets/images/soletrando/polvo.png"
     },
     {
         id: 'cavalo_marinho',
         title: "Cavalo Marinho",
-        image: "src/assets/images/soletrando/"
+        image: "src/assets/images/soletrando/cavalo_marinho.png"
     },
     {
         id: 'peixe',
         title: "Peixe",
-        image: "src/assets/images/soletrando/"
+        image: "src/assets/images/soletrando/peixe.png"
     }
 ];
 
@@ -114,37 +114,37 @@ const fazenda_animals: IAnimal[] = [
     {
         id: 'cavalo',
         title: "Cavalo",
-        image: "src/assets/images/soletrando/"
+        image: "src/assets/images/soletrando/cavalo.png"
     },
     {
         id: 'vaca',
         title: "Vaca",
-        image: "src/assets/images/soletrando/"
+        image: "src/assets/images/soletrando/vaca.png"
     },
     {
         id: 'galinha',
         title: "Galinha",
-        image: "src/assets/images/soletrando/"
+        image: "src/assets/images/soletrando/galinha.png"
     },
     {
         id: 'porco',
         title: "Porco",
-        image: "src/assets/images/soletrando/"
+        image: "src/assets/images/soletrando/porco.png"
     },
     {
         id: 'ovelha',
         title: "Ovelha",
-        image: "src/assets/images/soletrando/"
+        image: "src/assets/images/soletrando/ovelha.png"
     },
     {
         id: 'pato',
         title: "Pato",
-        image: "src/assets/images/soletrando/"
+        image: "src/assets/images/soletrando/pato.png"
     }
 ];
 
 
-type AnimalCategory = 'empty' | 'selva' | 'domestico' | 'mar' | 'fazenda';
+type AnimalCategory = 'empty' | 'jungle' | 'domestic' | 'ocean' | 'farm';
 
 function AnimalCards({ animal }: { animal: IAnimal }) {
     const { play } = useTTS({ text: animal.title });
@@ -164,32 +164,32 @@ function AnimalCards({ animal }: { animal: IAnimal }) {
 }
 
 export function Animals() {
-    const [activeCategory, setActiveCategory] = useState<AnimalCategory>('selva');
+    const [activeCategory, setActiveCategory] = useState<AnimalCategory>('jungle');
 
     const getDisplayedAnimals = () => {
         switch (activeCategory) {
-            case 'selva':
-                return selva_animals;
-            case 'domestico':
-                return domestico_animals;
-            case 'mar':
+            case 'jungle':
+                return jungle_animals;
+            case 'domestic':
+                return domestic_animals;
+            case 'ocean':
                 return mar_animals;
-            case 'fazenda':
+            case 'farm':
                 return fazenda_animals;
             default:
-                return selva_animals;
+                return jungle_animals;
         }
     };
 
     const getGridCols = () => {
         switch (activeCategory) {
-            case 'selva':
+            case 'jungle':
                 return 'xl:grid-cols-3';
-            case 'domestico':
+            case 'domestic':
                 return 'xl:grid-cols-4';
-            case 'mar':
+            case 'ocean':
                 return 'xl:grid-cols-4';
-            case 'fazenda':
+            case 'farm':
                 return 'xl:grid-cols-3';
             default:
                 return 'xl:grid-cols-3';
@@ -206,9 +206,10 @@ export function Animals() {
                     variant="tertiary"
                     className={cn(
                         "w-full text-nowrap px-6 text-zinc-50 transition-all",
-                        activeCategory === 'selva' && "ring-2 ring-white ring-offset-2"
+                        activeCategory === 'jungle' && "ring-2 ring-white ring-offset-2"
                     )}
-                    onClick={() => setActiveCategory('selva')}
+                    onClick={() => setActiveCategory('jungle')}
+                    isSelected={activeCategory === 'jungle'}
                 >
                     Selva
                 </Button>
@@ -217,9 +218,10 @@ export function Animals() {
                     variant="primary"
                     className={cn(
                         "w-full text-nowrap px-6 text-zinc-50 transition-all bg-orange-400",
-                        activeCategory === 'domestico' && "ring-2 ring-white ring-offset-2"
+                        activeCategory === 'domestic' && "ring-2 ring-white ring-offset-2"
                     )}
-                    onClick={() => setActiveCategory('domestico')}
+                    onClick={() => setActiveCategory('domestic')}
+                    isSelected={activeCategory === 'domestic'}
                 >
                     Doméstico
                 </Button>
@@ -228,9 +230,10 @@ export function Animals() {
                     variant="primary"
                     className={cn(
                         "w-full text-nowrap px-6 text-zinc-50 transition-all bg-blue-600",
-                        activeCategory === 'mar' && "ring-2 ring-white ring-offset-2"
+                        activeCategory === 'ocean' && "ring-2 ring-white ring-offset-2"
                     )}
-                    onClick={() => setActiveCategory('mar')}
+                    onClick={() => setActiveCategory('ocean')}
+                    isSelected={activeCategory === 'ocean'}
                 >
                     Mar
                 </Button>
@@ -239,9 +242,10 @@ export function Animals() {
                     variant="quaternary"
                     className={cn(
                         "w-full text-nowrap px-6 text-zinc-50 transition-all",
-                        activeCategory === 'fazenda' && "ring-2 ring-white ring-offset-2"
+                        activeCategory === 'farm' && "ring-2 ring-white ring-offset-2"
                     )}
-                    onClick={() => setActiveCategory('fazenda')}
+                    onClick={() => setActiveCategory('farm')}
+                    isSelected={activeCategory === 'farm'}
                 >
                     Fazenda
                 </Button>

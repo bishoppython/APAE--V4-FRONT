@@ -10,51 +10,51 @@ interface INecessity {
 const necessities: INecessity[] = [
     {
         title: "SIM",
-        image: "placeholder.jpg",
+        image: "src/assets/images/necessidades/sim.png",
     },
     {
         title: "NÃO",
-        image: "placeholder.jpg",
+        image: "src/assets/images/necessidades/nao.png",
     },
     {
         title: "ESTOU CANSADO",
-        image: "placeholder.jpg",
+        image: "src/assets/images/necessidades/cansado.png",
     },
     {
         title: "ESTOU COM FOME",
-        image: "placeholder.jpg",
+        image: "src/assets/images/necessidades/fome.png",
     },
     {
         title: "ESTOU COM SEDE",
-        image: "placeholder.jpg",
+        image: "src/assets/images/necessidades/sede.png",
     },
     {
         title: "QUERO IR AO BANHEIRO",
-        image: "placeholder.jpg",
+        image: "src/assets/images/necessidades/banheiro.png",
     },
     {
         title: "QUERO BRINCAR",
-        image: "placeholder.jpg",
+        image: "src/assets/images/necessidades/brincar.png",
     },
     {
         title: "NÃO ME SINTO BEM",
-        image: "placeholder.jpg",
+        image: "src/assets/images/necessidades/nao_me_sinto_bem.png",
     },
     {
         title: "ESTOU COM FRIO",
-        image: "placeholder.jpg",
+        image: "src/assets/images/necessidades/frio.png",
     },
     {
         title: "ESTOU COM CALOR",
-        image: "placeholder.jpg",
+        image: "src/assets/images/necessidades/calor.png",
     },
     {
         title: "ESTOU COM MEDO",
-        image: "placeholder.jpg",
+        image: "src/assets/images/necessidades/medo.png",
     },
     {
         title: "POR FAVOR",
-        image: "placeholder.jpg",
+        image: "src/assets/images/necessidades/por_favor.png",
     },
 ]
 

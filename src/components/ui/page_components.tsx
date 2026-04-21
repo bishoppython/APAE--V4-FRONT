@@ -3,7 +3,7 @@ import { cn } from "@/libs/utils";
 export function PageContainer({ children, className }: React.ComponentProps<'div'>) {
     return (
         <div className={cn(
-            'flex flex-col min-h-[60vh] px-4 py-6 md:pb-16 items-center justify-between gap-8',
+            'flex flex-col min-h-[60vh] px-4 py-6 md:pb-16 items-center justify-between gap-2 sm:gap-8',
             className
         )}>
             {children}
@@ -14,7 +14,7 @@ export function PageContainer({ children, className }: React.ComponentProps<'div
 export function PageTitle({ children, className, ...input }: React.ComponentProps<'h1'>) {
     return (
         <h1 className={cn(
-            'text-[2.5rem] md:text-[3.25rem] text-center font-extrabold',
+            'text-[2.5rem] md:text-[3.25rem] text-center font-extrabold mb-2 sm:mb-0',
             className
         )} {...input}>
             {children}

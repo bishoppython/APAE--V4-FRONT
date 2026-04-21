@@ -139,7 +139,7 @@ export function Colors() {
     };
 
     return (
-        <PageContainer className='transition-all duration-1000'>
+        <PageContainer>
             <PageTitle>CORES</PageTitle>
 
             <ButtonGroup>
@@ -148,6 +148,7 @@ export function Colors() {
                     variant="primary"
                     className="w-full text-nowrap px-6 text-zinc-50"
                     onClick={() => setActiveCategory('primary')}
+                    isSelected={activeCategory === 'primary'}
                 >
                     Cores Primárias
                 </Button>
@@ -156,6 +157,7 @@ export function Colors() {
                     variant="tertiary"
                     className="w-full text-nowrap px-6 text-zinc-50"
                     onClick={() => setActiveCategory('secondary')}
+                    isSelected={activeCategory === 'secondary'}
                 >
                     Cores Secundárias
                 </Button>
@@ -164,6 +166,7 @@ export function Colors() {
                     variant="quaternary"
                     className="w-full text-nowrap px-6 text-zinc-50"
                     onClick={() => setActiveCategory('tertiary')}
+                    isSelected={activeCategory === 'tertiary'}
                 >
                     Cores Terciárias
                 </Button>
@@ -172,12 +175,11 @@ export function Colors() {
             <CardGroupContainer className={cn(
                 activeCategory === 'primary' && 'xl:grid-cols-3',
                 activeCategory === 'secondary' && 'xl:grid-cols-3',
-                activeCategory === 'tertiary' && 'xl:grid-cols-5',
+                activeCategory === 'tertiary' && 'xl:grid-cols-5 lg:grid-cols-4',
             )}>
                 {activeCategory !== 'empty' && getDisplayedColors().map((color) => (
                     <ColorCards key={color.id} colors={color} />
                 ))}
-
             </CardGroupContainer>
         </PageContainer>
     )
