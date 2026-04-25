@@ -18,7 +18,6 @@ import { Colors } from "@/pages/conversation/colors";
 import Soletrando from "@/pages/jogos/Soletrando";
 import Labirinto from "@/pages/jogos/Labirinto";
 import Memoria from "@/pages/jogos/Memoria";
-import AdivinhaAnimais from "./pages/jogos/AdivinhaAnimais";
 
 function MainLayout() {
     return (
@@ -46,9 +45,8 @@ export function AppRouter() {
                     <Route path="/calculadora" element={<Numbers />} />
                     <Route path="/animais" element={<Animals />} />
                     <Route path="/misturando-cores" element={<ColorMixer />} />
-                    
+
                     {/* Jogos */}
-                    <Route path="/adivinha-animais" element={<AdivinhaAnimais />} />
                     <Route path="/labirinto" element={<Labirinto />} />
                     <Route path="/soletrando" element={<Soletrando />} />
                     <Route path="/memoria" element={<Memoria />} />

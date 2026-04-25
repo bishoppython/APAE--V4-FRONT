@@ -22,9 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-FRONTEND-LEGADO/frontend/src/images/
-FRONTEND-LEGADO/frontend/src/audio/
-src/assets/images/
-public/audio
-public/images
