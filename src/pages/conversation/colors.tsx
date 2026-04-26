@@ -34,7 +34,7 @@ const primary_colors: IColor[] = [
     },
 ]
 
-const secundary_colors: IColor[] = [
+const secondary_colors: IColor[] = [
     {
         id: 'green',
         title: "VERDE",
@@ -130,7 +130,7 @@ export function Colors() {
             case 'primary':
                 return primary_colors;
             case 'secondary':
-                return secundary_colors;
+                return secondary_colors;
             case 'tertiary':
                 return terciary_colors;
             default:

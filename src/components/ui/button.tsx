@@ -9,7 +9,7 @@ const ButtonVariants = cva(
         variants: {
             variant: {
                 'primary': 'w-85 h-15 bg-primary text-2xl font-medium',
-                'secundary': 'w-60 h-14 text-[14px] border-2 border-secondary/60',
+                'secondary': 'w-60 h-14 text-lg px-4 border-2 border-secondary/60',
                 'tertiary': 'w-30 h-15 bg-[#46CF0C] text-2xl font-medium',
                 'quaternary': 'w-100 h-15 bg-red-600 text-2xl font-medium',
             },
@@ -19,7 +19,7 @@ const ButtonVariants = cva(
 
 interface IButtonProps extends React.ComponentProps<'button'> {
     title?: string;
-    variant?: 'primary' | 'secundary' | 'tertiary' | 'quaternary';
+    variant?: 'primary' | 'secondary' | 'tertiary' | 'quaternary';
     isDisabled?: boolean;
     isSelected?: boolean
 }

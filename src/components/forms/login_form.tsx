@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Button } from "../ui/button";
-import { FormContainer, FormField, FormItem, FormLabel, FormMessageReserved, Input } from "../ui/form";
+import { FormContainer, FormField, FormItem, FormLabel, FormMessage, FormMessageReserved, Input } from "../ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateSession } from "@/services/sessions";
@@ -60,6 +60,10 @@ function LoginForm() {
                         </FormItem>
                     )}
                 />
+
+                <div className="w-full flex justify-end text-lg">Esqueceu a senha?
+                    <a href="" className="text-primary font-bold ml-1">Recuperar senha</a>
+                </div>
 
                 <Button variant="primary" type="submit" className="mt-2">Login</Button>
             </FormContainer>
