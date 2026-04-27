@@ -21,6 +21,7 @@ import Memoria from "@/pages/games/Memoria";
 import AdivinhaAnimais from "./pages/games/AdivinhaAnimais";
 import EncaixeFormas from "./pages/games/EncaixeFormas";
 import CobrirTracejado from "./pages/games/CobrirTracejado";
+import QuebraCabeca from "./pages/games/QuebraCabeca";
 
 function MainLayout() {
     return (
@@ -56,6 +57,7 @@ export function AppRouter() {
                     <Route path="/memoria" element={<Memoria />} />
                     <Route path="/encaixe-formas" element={<EncaixeFormas />} />
                     <Route path="/cobrir-tracejado" element={<CobrirTracejado />} />
+                    <Route path="/quebra-cabeca" element={<QuebraCabeca />} />
                 </Route>
 
                 <Route path="/login" element={<Login />} />

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, type JSX } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Trophy, RotateCcw, Info } from "lucide-react";
+import { Trophy, Info } from "lucide-react";
 import confetti from "canvas-confetti";
 
 interface Forma {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Volume2, Trophy, RotateCcw } from "lucide-react";
+import { Volume2, Trophy } from "lucide-react";
 
 const animaisData = [
   { id: 1, nome: "a Baleia", imagem: "baleia", audioPergunta: "/audio/adivinha/onde-esta-baleia.ogg" },

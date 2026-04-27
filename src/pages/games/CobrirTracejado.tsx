@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Trophy, RotateCcw } from "lucide-react";
+import { Trophy, RotateCcw } from "lucide-react";
 
 // Funções de desenho
 function desenharLetraA(ctx: CanvasRenderingContext2D) {
