@@ -220,7 +220,7 @@ export function Select({
 
             <SelectPrimitive.Portal>
                 <SelectPrimitive.Content
-                    className="mt-18 overflow-hidden bg-primary text-secondary-foreground rounded-2xl shadow-xl min-w-(--radix-select-trigger-)"
+                    className="z-50 mt-18 overflow-hidden bg-primary text-secondary-foreground rounded-2xl shadow-xl min-w-(--radix-select-trigger-)"
                 >
                     <SelectPrimitive.Viewport className="p-2">
                         {options.map((opt, index) => (
