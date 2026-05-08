@@ -15,7 +15,6 @@ const ButtonVariants = cva(
             },
         }
     }
-  }
 )
 
 interface IButtonProps extends React.ComponentProps<'button'> {
