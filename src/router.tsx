@@ -51,7 +51,7 @@ export function AppRouter() {
                     <Route path="/misturando-cores" element={<ColorMixer />} />
 
                     {/* Jogos */}
-                    <Route path="/adivinha-animais" element={<AdivinhaAnimais />} />
+                    <Route path="/onde-esta" element={<AdivinhaAnimais />} />
                     <Route path="/labirinto" element={<Labirinto />} />
                     <Route path="/soletrando" element={<Soletrando />} />
                     <Route path="/memoria" element={<Memoria />} />
