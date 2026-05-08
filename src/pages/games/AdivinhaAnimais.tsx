@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { ArrowLeft, Volume2, Trophy, RotateCcw } from "lucide-react";
+import confetti from "canvas-confetti";
+import { OverlayResultado } from "@/components/OverlayResultado";
+import MenuGame from "@/components/MenuGame";
+import HeaderGame from "@/components/HeaderGame";
+
 import { Volume2, Trophy } from "lucide-react";
 
 const animaisData = [
@@ -55,15 +61,13 @@ export default function AdivinhaAnimais() {
   const [animalAtual, setAnimalAtual] = useState(animaisData[0]);
   const [opcoes, setOpcoes] = useState<typeof animaisData>([]);
   const [mensagem, setMensagem] = useState("");
-  const [jogoFinalizado, setJogoFinalizado] = useState(false);
+  
   const [podeClicar, setPodeClicar] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isShaking, setIsShaking] = useState(false); // Novo estado para tremer
-  const [started, setStarted] = useState(false);
   
+  const [gameState, setGameState] = useState<'menu' | 'playing' | 'won' | 'lost' | 'gaveUp'>('menu');
   const [erros, setErros] = useState(0);
-  const [jogoPerdido, setJogoPerdido] = useState(false);
-  const [desistiu, setDesistiu] = useState(false);
   const MAX_ERROS = 3;
 
   const tocarAudio = (caminho: string) => {
@@ -73,15 +77,21 @@ export default function AdivinhaAnimais() {
 
   const dadosAtuais = categoria === "animais" ? animaisData : coresData;
 
+  const backToMenu = () => {
+    setGameState('menu');
+  };
+
+  const handleGiveUp = () => {
+    setGameState('gaveUp');
+  };
+
   const iniciarJogo = () => {
     const embaralhado = [...dadosAtuais].sort(() => 0.5 - Math.random());
-    setJogoFinalizado(false);
-    setJogoPerdido(false);
-    setDesistiu(false);
+
     setErros(0);
     setMensagem("");
     proximaRodada(embaralhado);
-    setStarted(true);
+    setGameState('playing');
   };
 
   useEffect(() => {
@@ -90,8 +100,13 @@ export default function AdivinhaAnimais() {
 
   const proximaRodada = (restantes: typeof animaisData) => {
     if (restantes.length === 0) {
-      setJogoFinalizado(true);
+      setGameState('won');
       tocarAudio("/audio/efeito-vitória.mp3");
+      confetti({
+        particleCount: 300,
+        spread: 120,
+        origin: { y: 0.6 }
+        });
       return;
     }
 
@@ -139,7 +154,7 @@ export default function AdivinhaAnimais() {
         setIsShaking(true);
         setMensagem("Fim de Jogo! ❌");
         setTimeout(() => {
-          setJogoPerdido(true);
+          setGameState('lost');
           setIsShaking(false);
           setPodeClicar(true);
         }, 1500);
@@ -166,6 +181,7 @@ export default function AdivinhaAnimais() {
   };
 
   return (
+    <div className="flex flex-col items-center justify-center p-6 min-h-screen bg-gray-100">
     <div className="min-h-screen bg-gray-50 font-poppins relative pb-24">
       {/* Definindo a animação de shake inline para não precisar mexer no tailwind.config.js */}
       <style>
@@ -178,67 +194,76 @@ export default function AdivinhaAnimais() {
           .animate-shake {
             animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
           }
+          @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+          }
+          .animate-pop-in {
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+          }
         `}
       </style>
 
-      {!started && (
-        <div className="flex flex-col items-center justify-center p-6 min-h-screen">
-          <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md w-full mx-4 border-t-8 border-orange-500 animate-pop-in">
-            <div className="flex justify-center items-center mb-6 space-x-4">
-              <span className="text-5xl">🦁</span>
-              <span className="text-5xl">🐘</span>
-              <span className="text-5xl">🐒</span>
-            </div>
-            <h1 className="text-3xl font-bold mb-4 text-gray-800">Adivinhe os Animais</h1>
-            <p className="text-gray-600 mb-8 font-medium">Escolha a categoria, ouça o som e clique na imagem correta!</p>
-
-            <div className="grid grid-cols-2 gap-4 mb-8">
-                {(["animais", "cores"] as const).map(cat => (
-                    <label key={cat} className={`flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all ${
-                        categoria === cat ? 'border-orange-500 bg-orange-50 transform scale-105 shadow-md' : 'border-gray-200 hover:bg-gray-50'
-                    }`}>
-                        <input
-                            name="theme-radio"
-                            type="radio"
-                            className="hidden"
-                            checked={categoria === cat}
-                            onChange={() => setCategoria(cat)}
-                        />
-                        <span className={`font-bold text-lg capitalize ${categoria === cat ? 'text-orange-700' : 'text-gray-600'}`}>
-                            {cat}
-                        </span>
-                    </label>
-                ))}
-            </div>
-
-            <button
-              onClick={iniciarJogo}
-              className="w-full font-bold py-4 px-8 rounded-xl text-lg transition-transform hover:scale-105 active:scale-95 cursor-pointer shadow-lg flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white"
+      {gameState === 'menu' &&  (
+        <MenuGame
+        titulo="Adivinhe os Animais"
+        subtitulo="Escolha a categoria, ouça o som e clique na imagem correta!"
+        corDestaque="orange"
+        onIniciar={iniciarJogo}
+        icones={
+          <>
+            <span className="text-5xl">🦁</span>
+            <span className="text-5xl">🐘</span>
+            <span className="text-5xl">🐒</span>
+          </>
+        }
+      >
+        <div className="grid grid-cols-2 gap-4">
+          {(["animais", "cores"] as const).map((cat) => (
+            <label
+              key={cat}
+              onClick={() => setCategoria(cat)} 
+              className={`flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all select-none ${
+                categoria === cat
+                  ? 'border-orange-500 bg-orange-50 transform scale-105 shadow-md'
+                  : 'border-gray-200 hover:bg-gray-50 active:scale-95'
+              }`}
             >
-              Jogar Agora
-            </button>
-          </div>
+              <input
+                type="radio"
+                className="hidden"
+                checked={categoria === cat}
+                readOnly
+              />
+              <span
+                className={`font-bold text-lg capitalize pointer-events-none ${
+                  categoria === cat ? 'text-orange-700' : 'text-gray-600'
+                }`}
+              >
+                {cat}
+              </span>
+            </label>
+          ))}
         </div>
+      </MenuGame>
       )}
 
-      {started && !jogoFinalizado && !jogoPerdido && !desistiu && (
+      {gameState === 'playing' && (
         <main className="w-full max-w-5xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-24">
           {/* Header */}
-          <div className="mb-4 flex flex-col md:flex-row justify-between w-full max-w-6xl items-center pb-2 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-700 mb-2 md:mb-0">Adivinhe a Imagem</h1>
-            <div className="flex items-center gap-4">
-              <span className="text-gray-600 font-medium">
-                Erros: <span className="text-red-500 font-bold mr-4">{erros} / {MAX_ERROS}</span>
-                Progresso: <span className="text-blue-600 font-bold">{dadosAtuais.length - animaisRestantes.length} / {dadosAtuais.length}</span>
-              </span>
-              <button
-                onClick={() => setDesistiu(true)}
-                className="px-5 py-2 bg-red-100 hover:bg-red-200 rounded-lg cursor-pointer text-sm font-bold text-red-700 transition shadow-sm"
-              >
-                Desistir
-              </button>
-            </div>
-          </div>
+          <HeaderGame
+            titulo="Adivinhe a Imagem"
+            onDesistir={handleGiveUp}
+          >
+            {/* Children */}
+            <span className="text-gray-600 font-medium">
+              Erros: <span className="text-red-500 font-bold">{erros} / {MAX_ERROS}</span>
+            </span>
+            <span className="text-gray-600 font-medium hidden sm:inline">
+              Progresso: <span className="text-blue-600 font-bold">{dadosAtuais.length - animaisRestantes.length}</span>
+            </span>
+          </HeaderGame>
 
           {/* Content */}
           {animalAtual && (
@@ -260,7 +285,8 @@ export default function AdivinhaAnimais() {
                   <p className={`text-2xl md:text-3xl font-bold 
                     ${mensagem.includes('acertou') ? 'text-green-500 animate-bounce' : 'text-red-500'} 
                     ${isShaking ? 'animate-shake' : ''} 
-                  `}>
+                  `}
+                  >
                     {mensagem}
                   </p>
                 )}
@@ -294,87 +320,45 @@ export default function AdivinhaAnimais() {
         </main>
       )}
 
-      {(jogoPerdido || desistiu || jogoFinalizado) && (
-        <div className="flex flex-col items-center justify-center p-6 min-h-[80vh]">
-          {jogoPerdido && (
-            <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-red-500 animate-pop-in">
-              <div className="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
-                <span className="text-red-500 text-5xl font-bold">X</span>
-              </div>
-              <h2 className="text-4xl font-extrabold text-red-600 mb-4">Fim de Jogo!</h2>
-              <p className="text-xl text-gray-700 mb-8">
-                Você atingiu o limite de <span className="font-bold text-red-600 text-2xl">{MAX_ERROS}</span> erros.
-              </p>
-              <div className="flex flex-col gap-3 w-full">
-                <button
-                  onClick={iniciarJogo}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
-                >
-                  Jogar Novamente
-                </button>
-                <Link
-                  to="/"
-                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg block"
-                >
-                  Voltar para o Menu
-                </Link>
-              </div>
-            </div>
+          {gameState === 'lost' && (
+            <OverlayResultado
+              tipo="derrota"
+              titulo="Fim de Jogo!"
+              subtitulo={<>Você atingiu o limite de <span className="font-bold text-red-600 text-2xl">{MAX_ERROS}</span> erros.</>}
+              onReiniciar={backToMenu}
+              icon={<span className="mx-auto w-20 h-20 text-5xl font-bold text-red-600 bg-red-100 rounded-full flex items-center justify-center mb-6">X</span>}
+            />
+          )}
+          
+          {gameState === 'gaveUp' && (
+            <OverlayResultado
+              tipo="desistencia"
+              titulo="Você desistiu!"
+              subtitulo="Não desanime, tente novamente!"
+              onReiniciar={backToMenu}
+              icon={
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              }
+            />
           )}
 
-          {desistiu && (
-            <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-orange-500 animate-pop-in">
-              <div className="mx-auto w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mb-6">
-                <span className="text-orange-500 text-5xl font-bold">!</span>
-              </div>
-              <h2 className="text-4xl font-extrabold text-orange-600 mb-4">Você Desistiu!</h2>
-              <p className="text-xl text-gray-700 mb-2">
-                Você acertou <span className="font-bold text-2xl text-orange-600">{dadosAtuais.length - animaisRestantes.length}</span> imagens.
-              </p>
-              <div className="flex flex-col gap-3 w-full mt-8">
-                <button
-                  onClick={iniciarJogo}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
-                >
-                  Jogar Novamente
-                </button>
-                <Link
-                  to="/"
-                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg block"
-                >
-                  Voltar para o Menu
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {jogoFinalizado && (
-            <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-green-500 animate-pop-in">
-              <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                <Trophy size={40} className="text-green-500" />
-              </div>
-              <h2 className="text-4xl font-extrabold text-green-600 mb-4">Você Venceu!</h2>
-              <p className="text-xl text-gray-700 mb-8">
-                Parabéns! Você encontrou todas as imagens com sucesso!
-              </p>
-              <div className="flex flex-col gap-3 w-full">
-                <button
-                  onClick={iniciarJogo}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
-                >
-                  Jogar Novamente
-                </button>
-                <Link
-                  to="/"
-                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg block"
-                >
-                  Voltar para o Menu
-                </Link>
-              </div>
-            </div>
+          {gameState === 'won' && (
+            <OverlayResultado
+              tipo="vitoria"
+              titulo="Parabéns!"
+              subtitulo="Você acertou todos os animais!"
+              onReiniciar={backToMenu}
+              icon={
+                <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>}
+            />
           )}
         </div>
-      )}
-    </div>
-  );
-}
+      </div>
+    )
+  }

@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import confetti from "canvas-confetti";
+import MenuGame from "@/components/MenuGame";
+import { OverlayResultado } from "@/components/OverlayResultado";
+import HeaderGame from "@/components/HeaderGame";
 
 interface Palavra {
     palavra: string;
@@ -91,9 +94,8 @@ const getImageUrl = (name: string) => {
 };
 
 export default function Soletrando() {
-    const [started, setStarted] = useState(false);
+    
     const [pontos, setPontos] = useState(0);
-    const [finished, setFinished] = useState(false);
     const [palavras, setPalavras] = useState<Palavra[]>([]);
     const [indiceAtual, setIndiceAtual] = useState(0);
     const [tentativas, setTentativas] = useState(0);
@@ -103,7 +105,7 @@ export default function Soletrando() {
     const [letras, setLetras] = useState<{ letra: string, id: number }[]>([]);
     const [letrasUsadas, setLetrasUsadas] = useState<number[]>([]);
     const [feedback, setFeedback] = useState({ texto: "", tipo: "" });
-
+    const [gameState, setGameState] = useState<'menu' | 'playing' | 'won' | 'gaveUp'>('menu');
     const palavraAtual = palavras[indiceAtual];
 
     // Reproduzir Áudios da Aplicação
@@ -112,10 +114,16 @@ export default function Soletrando() {
         audio.play().catch(e => console.warn("Falha ao reproduzir:", e));
     };
 
+    const backToMenu = () => {
+    setGameState('menu');
+  };
+
+  const handleGiveUp = () => {
+    setGameState('gaveUp');
+  };
+
     const iniciarJogo = () => {
         setPontos(0);
-        setStarted(true);
-        setFinished(false);
         setRetryingFailed(false);
         setPalavras(embaralharArray(palavrasOriginais));
         setPalavrasErradas([]);
@@ -123,11 +131,12 @@ export default function Soletrando() {
         setTentativas(0);
         setTentativa("");
         setLetrasUsadas([]);
+        setGameState('playing');
         setFeedback({ texto: "", tipo: "" });
     };
 
     useEffect(() => {
-        if (started && !finished && palavraAtual) {
+        if (gameState === 'playing' && palavraAtual) {
             const letrasShuffled = embaralharArray(palavraAtual.palavra.replace(/-/g, "").split("").map((letra, index) => ({
                 letra,
                 id: index
@@ -139,7 +148,7 @@ export default function Soletrando() {
             setFeedback({ texto: "", tipo: "" });
             playAudio(`/audio/soletrando/${palavraAtual.palavra}.mp3`);
         }
-    }, [palavraAtual, started, finished]);
+    }, [palavraAtual, gameState]);
 
     const handleLetterClick = (letraObj: { letra: string, id: number }, indexInArray: number) => {
         if (letrasUsadas.includes(indexInArray) || feedback.tipo === 'correto') return;
@@ -173,7 +182,7 @@ export default function Soletrando() {
 
                     // Finaliza o jogo após 2 segundos para dar tempo de ler e mostrar os pontos
                     setTimeout(() => {
-                        setFinished(true);
+                        setGameState('won');
                     }, 2000);
                 } else {
                     setFeedback({ texto: `❌ Tente novamente! Restam ${maxTentativas - novasTentativas} tentativa(s).`, tipo: "errado" });
@@ -213,7 +222,7 @@ export default function Soletrando() {
                 setFeedback({ texto: "Vamos revisar as palavras erradas...", tipo: "" });
                 return []; // limpa para a revisão
             } else {
-                setFinished(true);
+                setGameState('won');
                 setFeedback({ texto: "🎉 Parabéns! Você completou todas as palavras!", tipo: "correto" });
                 playAudio("/audio/efeito-vitória.mp3");
                 confetti({ particleCount: 300, spread: 120, origin: { y: 0.6 } });
@@ -225,49 +234,38 @@ export default function Soletrando() {
 
     return (
         <div className="min-h-screen bg-gray-50 font-poppins relative pb-24">
-            {!started && (
-                <div className="flex flex-col items-center justify-center p-6 min-h-screen">
-                    <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-sm w-full mx-4 border-t-8 border-indigo-500 animate-pop-in">
-                        <div className="flex justify-center mb-6 space-x-2">
-                            <span className="text-4xl font-extrabold text-red-500" style={{ animationDelay: '0ms' }}>A</span>
-                            <span className="text-4xl font-extrabold text-blue-500" style={{ animationDelay: '100ms' }}>B</span>
-                            <span className="text-4xl font-extrabold text-yellow-500" style={{ animationDelay: '200ms' }}>C</span>
-                        </div>
-                        <h1 className="text-3xl font-bold mb-6 text-gray-800">Soletrando</h1>
-                        <p className="text-gray-600 mb-8 font-medium">Escreva o nome correto de cada imagem que aparecer!</p>
-                        <button
-                            onClick={iniciarJogo}
-                            className="bg-indigo-500 hover:bg-indigo-600 text-white text-xl font-bold py-4 px-8 rounded-xl shadow-lg cursor-pointer transition transform hover:scale-105 active:scale-95 w-full flex items-center justify-center gap-2"
-                        >
-                            Jogar Agora
-                        </button>
-                    </div>
-                </div>
-            )}
+                <main className="w-full max-w-5xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8">
 
-            {started && (
-                <>
-                    <main className="w-full max-w-5xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8">
-                        {/* Barra Superior do Jogo (Pontos e Saída) */}
-                        {!finished && (
-                            <div className="mb-4 flex flex-col md:flex-row justify-between w-full max-w-4xl items-center pb-2 border-b border-gray-200">
-                                <h1 className="text-2xl font-bold text-gray-700 mb-2 md:mb-0">Soletrando</h1>
-                                <div className="flex items-center gap-4">
-                                    <span className="text-gray-600 font-medium">
-                                        Pontuação: <span className="text-blue-600 font-bold">{pontos}</span>
-                                    </span>
-                                    <button
-                                        onClick={() => setFinished(true)}
-                                        className="px-5 py-2 bg-red-100 hover:bg-red-200 rounded-lg cursor-pointer text-sm font-bold text-red-700 transition shadow-sm"
-                                    >
-                                        Desistir
-                                    </button>
-                                </div>
-                            </div>
-                        )}
+                    {gameState === 'menu' && (
+                        <MenuGame
+                            titulo="Soletrando"
+                            subtitulo="Escreva o nome correto de cada imagem que aparecer!"
+                            onIniciar={iniciarJogo}
+                            corDestaque="indigo"
+                            icones={
+                                <>
+                                <span className="text-4xl font-extrabold text-red-500">A</span>
+                                <span className="text-4xl font-extrabold text-blue-500">B</span>
+                                <span className="text-4xl font-extrabold text-yellow-500">C</span>
+                                </>
+                            }  
+                            /> 
+                        )
+                    }
+
+                    {gameState === 'playing' && (
+                    <>
+                        {/* Header */}
+                        <HeaderGame
+                            titulo="Soletrando" 
+                            onDesistir={handleGiveUp}
+                            >
+                        {/* Children */}
+                            <span className="text-gray-600 font-medium">Pontuação: <span className="text-blue-600 font-bold">{pontos}</span></span>
+                        </HeaderGame>
 
                         {/* Imagem */}
-                        {!finished && palavraAtual && (
+                        {palavraAtual && (
                             <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl p-4 mb-8 mt-2 md:mt-4 relative">
                                 <img
                                     className="w-full h-80 sm:h-[400px] md:h-[500px] lg:h-[600px] object-cover rounded-xl transition-all"
@@ -281,7 +279,7 @@ export default function Soletrando() {
 
 
                         {/* Quadros para formar a palavra */}
-                        {!finished && palavraAtual && (
+                        {palavraAtual && (
                             <div className="flex flex-wrap gap-2 sm:gap-4 justify-center mt-12 sm:mt-16 mb-14 w-full px-4">
                                 {(() => {
                                     let idxAlfabetico = 0;
@@ -307,7 +305,7 @@ export default function Soletrando() {
                         )}
 
                         {/* Letras para selecionar */}
-                        {!finished && palavraAtual && (
+                        {palavraAtual && (
                             <div className="flex flex-wrap justify-center gap-3 mb-6">
                                 {letras.map((letraObj, index) => {
                                     const usado = letrasUsadas.includes(index);
@@ -330,7 +328,7 @@ export default function Soletrando() {
                         )}
 
                         {/* Status de tentativas (só aparece se estiver jogando) */}
-                        {!finished && palavraAtual && (
+                        {palavraAtual && (
                             <p className="font-semibold text-gray-700 text-lg mb-4">
                                 Tentativas restantes: {maxTentativas - tentativas}
                             </p>
@@ -345,32 +343,32 @@ export default function Soletrando() {
                                 {feedback.texto}
                             </p>
                         </div>
-
-                        {/* Botão de Tentar Novamente na Tela Final */}
-                        {finished && (
-                            <div className="flex-1 flex flex-col items-center justify-center w-full min-h-[70vh]">
-                                <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-green-500">
-                                    <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                                        </svg>
-                                    </div>
-                                    <h2 className="text-4xl font-extrabold text-green-600 mb-4">Fim de Jogo!</h2>
-                                    <p className="text-xl text-gray-700 mb-2">Parabéns! Você alcançou <span className="font-bold text-2xl text-green-600">{pontos}</span> pontos.</p>
-                                    <p className="text-md text-gray-500 mb-8">Vamos tentar uma nova rodada e bater esse recorde?</p>
-                                    <button
-                                        type="button"
-                                        onClick={iniciarJogo}
-                                        className="w-full bg-green-500 hover:bg-green-600 text-white cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
-                                    >
-                                        Jogar Novamente
-                                    </button>
-                                </div>
-                            </div>
+                        </>
                         )}
-                    </main>
-                </>
-            )}
+
+
+                    {/* Botão de Tentar Novamente na Tela Final */}
+                    {gameState === 'gaveUp' && (
+                        <OverlayResultado
+                            tipo="vitoria"
+                            titulo="Fim de Jogo!"
+                            subtitulo={
+                                <>
+                                <p>Parabéns! Você alcançou <span className="font-bold text-2xl text-green-600">{pontos}</span> pontos.</p>
+                                <p className="text-md text-gray-500 mb-8">Vamos tentar uma nova rodada e bater esse recorde?</p>
+                                </>
+                            }
+                            onReiniciar={backToMenu} 
+                            icon={
+                                <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                    </svg>
+                                </div>
+                            }
+                            />
+                        )}
+                </main>    
         </div>
-    );
+    )
 }

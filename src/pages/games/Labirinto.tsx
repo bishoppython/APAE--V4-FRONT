@@ -1,6 +1,11 @@
 import { useState, useRef, useEffect } from "react";
+import confetti from "canvas-confetti";
 import mouseImg from "../../assets/images/labirinto/mouse.png";
 import cheeseImg from "../../assets/images/labirinto/chesse.png";
+import { OverlayResultado } from "@/components/OverlayResultado";
+import MenuGame from "@/components/MenuGame";
+import HeaderGame from "@/components/HeaderGame";
+import InstructionsGame from "@/components/InstructionsGame";
 
 // --- Funções Auxiliares (Legado) ---
 function rand(max: number) {
@@ -601,6 +606,11 @@ export default function Labirinto() {
       const onGameWon = (mvs: number) => {
         setMoves(mvs);
         setGameState('won');
+        confetti({
+          particleCount: 300,
+          spread: 120,
+          origin: { y: 0.6 }
+        });
       };
 
       const onStep = (mvs: number) => {
@@ -623,14 +633,19 @@ export default function Labirinto() {
     <div className="flex flex-col items-center justify-center p-6 min-h-screen bg-gray-100">
       
       {gameState === 'menu' && (
-        <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md w-full mx-4 border-t-8 border-green-500">
-          <div className="flex justify-center items-center mb-6 space-x-6">
-            <img src={mouseImg} alt="Rato" className="w-14 h-14" style={{animationDelay: '0ms'}} />
-            <img src={cheeseImg} alt="Queijo" className="w-14 h-14" style={{animationDelay: '200ms'}} />
-          </div>
-          <h1 className="text-3xl font-bold mb-4 text-gray-800">Labirinto</h1>
-          <p className="text-gray-600 mb-8 font-medium">Escolha a dificuldade e leve o ratinho até o queijo!</p>
-          
+        <MenuGame
+          titulo="Labirinto"
+          subtitulo="Escolha a dificuldade e leve o ratinho até o queijo!"
+          onIniciar={makeMaze}
+          podeIniciar={spritesLoaded}
+          corDestaque="green"
+          icones={
+            <>
+              <img src={mouseImg} alt="Rato" className="w-14 h-14" />
+              <img src={cheeseImg} alt="Queijo" className="w-14 h-14" />
+            </>
+          }
+        >
           <div className="grid grid-cols-2 gap-4 mb-8">
             {[
               { val: 10, label: 'Fácil' },
@@ -638,40 +653,49 @@ export default function Labirinto() {
               { val: 25, label: 'Difícil' },
               { val: 38, label: 'Extremo' }
             ].map((op) => (
-              <label key={op.val} className={`flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all ${tamanho === op.val ? 'border-green-500 bg-green-50 transform scale-105 shadow-md' : 'border-gray-200 hover:bg-gray-50'}`}>
+              <label 
+                key={op.val} 
+                onClick={() => setTamanho(op.val)} 
+                className={`flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all select-none ${
+                  tamanho === op.val 
+                    ? 'border-green-500 bg-green-50 transform scale-105 shadow-md' 
+                    : 'border-gray-200 hover:bg-gray-50 active:scale-95'
+                }`}
+              >
                 <input 
-                  name="value-radio" 
                   type="radio" 
                   className="hidden"
                   checked={tamanho === op.val}
-                  onChange={() => setTamanho(op.val)}
+                  readOnly 
                 />
-                <span className={`font-bold text-lg ${tamanho === op.val ? 'text-green-700' : 'text-gray-600'}`}>{op.label}</span>
-                <span className={`text-xs mt-1 ${tamanho === op.val ? 'text-green-600 font-semibold' : 'text-gray-400'}`}>{op.val}x{op.val}</span>
+                
+                <span className={`font-bold text-lg pointer-events-none ${
+                  tamanho === op.val ? 'text-green-700' : 'text-gray-600'
+                }`}>
+                  {op.label}
+                </span>
+                <span className={`text-xs mt-1 pointer-events-none ${
+                  tamanho === op.val ? 'text-green-600 font-semibold' : 'text-gray-400'
+                }`}>
+                  {op.val}x{op.val}
+                </span>
               </label>
-            ))}
-          </div>
-          
-          <button 
-            type="button" 
-            onClick={makeMaze}
-            disabled={!spritesLoaded}
-            className={`w-full font-bold py-4 px-8 rounded-xl text-lg transition-transform hover:scale-105 active:scale-95 cursor-pointer shadow-lg flex items-center justify-center gap-2 ${spritesLoaded ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
-          >
-            {spritesLoaded ? 'Jogar Agora' : 'Carregando recursos...'}
-          </button>
-        </div>
-      )}
+      ))}
+    </div>
+  </MenuGame>
+)}     
 
       {gameState === 'playing' && (
         <>
-          <div className="mb-4 flex flex-col md:flex-row justify-between w-full max-w-5xl items-center pb-2 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-700 mb-2 md:mb-0">Explore o labirinto!</h1>
-            <div className="flex items-center gap-4">
-               <span className="text-gray-600 font-medium">Movimentos: <span className="text-blue-600 font-bold">{moves}</span> <span className="text-sm text-gray-400">/ Ideal {minMoves}</span></span>
-               <button onClick={handleGiveUp} className="px-5 py-2 bg-red-100 hover:bg-red-200 rounded-lg cursor-pointer text-sm font-bold text-red-700 transition shadow-sm">Desistir</button>
-            </div>
-          </div>
+          {/* Header */}
+          <HeaderGame
+            titulo="Explore o Labirinto" 
+            onDesistir={handleGiveUp}
+          >
+            {/* Children */}
+            <span className="text-gray-600 font-medium">Movimentos: <span className="text-blue-600 font-bold">{moves}</span> 
+            <span className="text-sm text-gray-400">/ Ideal {minMoves}</span></span>
+          </HeaderGame>
           
           <div 
             ref={containerRef}
@@ -687,53 +711,50 @@ export default function Labirinto() {
           </div>
 
           {/* Instruções */}
-          <div className="instrucao bg-amber-50 border border-amber-200 text-amber-900 px-6 py-4 rounded-xl max-w-5xl w-full text-center shadow-sm">
-            <p className="font-medium text-lg flex items-center justify-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              Use as setas do teclado para mover o ratinho pelo labirinto até o queijo.
-            </p>
-          </div>
+          <InstructionsGame>
+            Use as setas do teclado para mover o ratinho pelo labirinto até o queijo.
+          </InstructionsGame>
         </>
       )}
 
       {gameState === 'won' && (
-        <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-green-500">
-          <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <h2 className="text-4xl font-extrabold text-green-600 mb-4">Você Venceu!</h2>
-          <p className="text-xl text-gray-700 mb-2">Parabéns! Você encontrou o queijo em <span className="font-bold text-2xl text-green-600">{moves}</span> movimentos.</p>
-          <p className="text-md text-gray-500 mb-8">O caminho ideal tinha exatos <span className="font-semibold text-gray-700">{minMoves}</span> passos.</p>
-          <button 
-            type="button" 
-            onClick={backToMenu}
-            className="w-full bg-green-500 hover:bg-green-600 text-white cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
-          >
-            Jogar Novamente
-          </button>
-        </div>
+        <OverlayResultado
+          tipo="vitoria"
+          titulo="Você Venceu!"
+          subtitulo={
+            <>
+              <p className="text-xl text-gray-700 mb-2">Parabéns! Você encontrou o queijo em <span className="font-bold text-2xl text-green-600">{moves}</span> movimentos.</p>
+              <p className="text-md text-gray-500 mb-8">O caminho ideal tinha exatos <span className="font-semibold text-gray-700">{minMoves}</span> passos.</p>
+            </>
+          }
+          onReiniciar={backToMenu} 
+          icon={
+            <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+            </div>
+          }
+        />
       )}
 
       {gameState === 'gaveUp' && (
-        <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-red-500">
-          <div className="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
+        <OverlayResultado
+          tipo="desistencia"
+          titulo="Você Desistiu!"
+          subtitulo={
+            <>
+              <p className="mb-2">Que pena! Você chegou a caminhar{" "} <span className="font-bold text-2xl text-red-600">{moves}</span>{" "} vezes pelo labirinto.</p>
+              <p className="text-md text-gray-500">Com apenas mais alguns passos, você teria encontrado o queijo.</p>
+            </>
+          }
+          onReiniciar={backToMenu} 
+          icon={
             <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-          </div>
-          <h2 className="text-4xl font-extrabold text-red-600 mb-4">Você Desistiu!</h2>
-          <p className="text-xl text-gray-700 mb-2">Que pena! Você chegou a caminhar <span className="font-bold text-2xl text-red-600">{moves}</span> vezes pelo labirinto.</p>
-          <p className="text-md text-gray-500 mb-8">Com apenas mais alguns passos, você teria encontrado o queijo.</p>
-          <button 
-            type="button" 
-            onClick={backToMenu}
-            className="w-full bg-green-500 hover:bg-green-600 cursor-pointer text-white font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
-          >
-            Voltar para o Menu
-          </button>
-        </div>
+          }
+        />
       )}
 
     </div>

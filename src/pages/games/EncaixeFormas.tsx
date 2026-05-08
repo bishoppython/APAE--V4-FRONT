@@ -2,6 +2,9 @@ import { useState, useEffect, useRef, type JSX } from "react";
 import { Link } from "react-router-dom";
 import { Trophy, Info } from "lucide-react";
 import confetti from "canvas-confetti";
+import { OverlayResultado } from "@/components/OverlayResultado";
+import HeaderGame from "@/components/HeaderGame";
+import InstructionsGame from "@/components/InstructionsGame";
 
 interface Forma {
   id: string;
@@ -102,15 +105,12 @@ interface DragState {
 }
 
 export default function EncaixeFormas() {
-  const [started, setStarted] = useState(false);
-  const [jogoFinalizado, setJogoFinalizado] = useState(false);
   const [formasNoPainel, setFormasNoPainel] = useState<Forma[]>([]);
   const [encaixadas, setEncaixadas] = useState<string[]>([]);
   const [dragState, setDragState] = useState<DragState | null>(null);
-  const [erros, setErros] = useState(0);
-  const [jogoPerdido, setJogoPerdido] = useState(false);
-  const [desistiu, setDesistiu] = useState(false);
   const [erroShapeId, setErroShapeId] = useState<string | null>(null);
+  const [gameState, setGameState] = useState<'menu' | 'playing' | 'won' | 'lost' | 'gaveUp'>('menu');
+  const [erros, setErros] = useState(0);
   const MAX_ERROS = 3;
   
   // Referências para verificar colisão no drop
@@ -128,16 +128,21 @@ export default function EncaixeFormas() {
     audio.play().catch((e) => console.log("Erro ao reproduzir áudio:", e));
   };
 
+  const backToMenu = () => {
+    setGameState('menu');
+  };
+
+  const handleGiveUp = () => {
+    setGameState('gaveUp');
+  };
+
   const iniciarJogo = () => {
-    setJogoFinalizado(false);
-    setJogoPerdido(false);
-    setDesistiu(false);
     setEncaixadas([]);
     setErros(0);
     setErroShapeId(null);
     // Embaralha as formas que ficarão no painel inferior para arrastar
     setFormasNoPainel([...formasData].sort(() => 0.5 - Math.random()));
-    setStarted(true);
+    setGameState('playing');
   };
 
   const handlePointerDown = (e: React.PointerEvent, id: string) => {
@@ -196,7 +201,7 @@ export default function EncaixeFormas() {
         // Verifica vitória
         if (novasEncaixadas.length === formasData.length) {
           setTimeout(() => {
-            setJogoFinalizado(true);
+            setGameState('won');
             tocarAudio("/audio/efeito-vitória.mp3");
             confetti({
               particleCount: 300,
@@ -216,7 +221,7 @@ export default function EncaixeFormas() {
 
         if (novosErros >= MAX_ERROS) {
           setTimeout(() => {
-            setJogoPerdido(true);
+            setGameState('lost');
           }, 500);
         }
       }
@@ -248,7 +253,7 @@ export default function EncaixeFormas() {
         `}
       </style>
 
-      {!started && (
+      {gameState === 'menu' && (
         <div className="flex flex-col items-center justify-center p-6 min-h-screen">
           <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-sm w-full mx-4 border-t-8 border-purple-500">
             <div className="flex justify-center mb-6 space-x-2">
@@ -268,26 +273,21 @@ export default function EncaixeFormas() {
         </div>
       )}
 
-      {started && !jogoFinalizado && !jogoPerdido && !desistiu && (
+      {gameState === 'playing' && (
         <main className="w-full max-w-5xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-24">
               {/* Header */}
-              <div className="mb-6 flex flex-col md:flex-row justify-between w-full max-w-4xl items-center pb-4 border-b border-gray-200">
-                <h1 className="text-2xl font-bold text-gray-700 mb-2 md:mb-0">Arraste as Formas</h1>
-                <div className="flex items-center gap-4">
-                  <span className="text-gray-600 font-medium">
-                    Erros: <span className="text-red-500 font-bold">{erros} / {MAX_ERROS}</span>
-                  </span>
-                  <span className="text-gray-600 font-medium hidden sm:inline">
-                    Progresso: <span className="text-blue-600 font-bold">{encaixadas.length} / {formasData.length}</span>
-                  </span>
-                  <button
-                    onClick={() => setDesistiu(true)}
-                    className="px-5 py-2 bg-red-100 hover:bg-red-200 rounded-lg cursor-pointer text-sm font-bold text-red-700 transition shadow-sm"
-                  >
-                    Desistir
-                  </button>
-                </div>
-              </div>
+              <HeaderGame
+                titulo="Arraste as Formas" 
+                onDesistir={handleGiveUp}
+              >
+                {/* Children */}
+                <span className="text-gray-600 font-medium">
+                  Erros: <span className="text-red-500 font-bold">{erros} / {MAX_ERROS}</span>
+                </span>
+                <span className="text-gray-600 font-medium hidden sm:inline">
+                  Progresso: <span className="text-blue-600 font-bold">{encaixadas.length} / {formasData.length}</span>
+                </span>
+              </HeaderGame>
 
               {/* Board (Área dos encaixes/sombras) */}
               <div className="w-full max-w-4xl bg-white rounded-3xl shadow-xl p-6 md:p-8 mb-8">
@@ -355,99 +355,43 @@ export default function EncaixeFormas() {
               </div>
 
               {/* Instruções (Estilo Labirinto) */}
-              <div className="mt-8 mb-6 instrucao bg-amber-50 border border-amber-200 text-amber-900 px-6 py-4 rounded-xl max-w-4xl w-full text-center shadow-sm">
-                <p className="font-medium text-lg flex items-center justify-center gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  Toque, segure e arraste as formas coloridas para encaixá-las em seus lugares no mural.
-                </p>
-              </div>
+              <InstructionsGame>
+                Toque, segure e arraste as formas coloridas para encaixá-las em seus lugares no mural.
+              </InstructionsGame>
         </main>
       )}
 
-      {(jogoPerdido || desistiu || jogoFinalizado) && (
-        <div className="flex flex-col items-center justify-center p-6 min-h-[80vh]">
-          {jogoPerdido && (
-            <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-red-500 animate-pop-in">
-              <div className="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
-                <span className="text-red-500 text-5xl font-bold">X</span>
-              </div>
-              <h2 className="text-4xl font-extrabold text-red-600 mb-4">Fim de Jogo!</h2>
-              <p className="text-xl text-gray-700 mb-8">
-                Você atingiu o limite de <span className="font-bold text-red-600 text-2xl">{MAX_ERROS}</span> erros.
-              </p>
-              <div className="flex flex-col gap-3 w-full">
-                <button
-                  onClick={iniciarJogo}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
-                >
-                  Jogar Novamente
-                </button>
-                <Link
-                  to="/"
-                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg block"
-                >
-                  Voltar para o Menu
-                </Link>
-              </div>
-            </div>
+      
+        
+          {gameState === 'lost' && (
+            <OverlayResultado
+              tipo="derrota"
+              titulo="Fim de Jogo!"
+              subtitulo={<>Você atingiu o limite de <span className="font-bold text-red-600 text-2xl">{MAX_ERROS}</span> erros.</>}
+              onReiniciar={backToMenu}
+              icon={<span className="mx-auto w-20 h-20 text-5xl font-bold text-red-600 bg-red-100 rounded-full flex items-center justify-center mb-6">X</span>}
+            />
           )}
 
-          {desistiu && (
-            <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-orange-500 animate-pop-in">
-              <div className="mx-auto w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mb-6">
-                <Info size={40} className="text-orange-500" />
-              </div>
-              <h2 className="text-4xl font-extrabold text-orange-600 mb-4">Você Desistiu!</h2>
-              <p className="text-xl text-gray-700 mb-2">
-                Que pena! Você chegou a encaixar <span className="font-bold text-2xl text-orange-600">{encaixadas.length}</span> formas.
-              </p>
-              <p className="text-md text-gray-500 mb-8">
-                Ainda faltavam {formasData.length - encaixadas.length} formas para completar o mural.
-              </p>
-              <div className="flex flex-col gap-3 w-full">
-                <button
-                  onClick={iniciarJogo}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
-                >
-                  Jogar Novamente
-                </button>
-                <Link
-                  to="/"
-                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg block"
-                >
-                  Voltar para o Menu
-                </Link>
-              </div>
-            </div>
+          {gameState === 'gaveUp' && (
+            <OverlayResultado
+              tipo="desistencia"
+              titulo="Você Desistiu!"
+              subtitulo={<>"Que pena! Você chegou a encaixar <span className="font-bold text-2xl text-orange-600">{encaixadas.length}</span> formas."</>}
+              onReiniciar={backToMenu}
+              icon={<Info size={40} className="text-orange-500" />}
+            />
           )}
 
-          {jogoFinalizado && (
-            <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-green-500 animate-pop-in">
-              <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                <Trophy size={40} className="text-green-500" />
-              </div>
-              <h2 className="text-4xl font-extrabold text-green-600 mb-4">Você Venceu!</h2>
-              <p className="text-xl text-gray-700 mb-8">
-                Parabéns! Você completou o mural com sucesso.
-              </p>
-              <div className="flex flex-col gap-3 w-full">
-                <button
-                  onClick={iniciarJogo}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
-                >
-                  Jogar Novamente
-                </button>
-                <Link
-                  to="/"
-                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg block"
-                >
-                  Voltar para o Menu
-                </Link>
-              </div>
-            </div>
+          {gameState === 'won' && (
+            <OverlayResultado
+              tipo="vitoria"
+              titulo="Você Venceu!"
+              subtitulo="Parabéns! Você completou o mural com sucesso."
+              onReiniciar={backToMenu}
+              icon={<Trophy size={40} className="text-green-500"/>}
+            />
           )}
-        </div>
-      )}
     </div>
   );
 }
