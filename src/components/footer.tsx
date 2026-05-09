@@ -1,5 +1,5 @@
 import { cn } from "@/libs/utils";
-import * as React from 'react';
+import * as React from "react";
 import { Link } from "react-router-dom";
 interface FooterProps {
   name: string;
@@ -23,7 +23,7 @@ function FooterLinkGroup({ children, title }: FooterLinkGroupProps) {
       <h3 className="text-sm font-semibold text-zinc-300 pb-5">{title}</h3>
       {children}
     </nav>
-  )
+  );
 }
 
 function FooterLink({ href, children, classname }: FooterLinkProps) {
@@ -32,12 +32,12 @@ function FooterLink({ href, children, classname }: FooterLinkProps) {
       to={href}
       className={cn(
         "block text-sm transition-colors hover:text-white",
-        classname
+        classname,
       )}
     >
       {children}
     </Link>
-  )
+  );
 }
 
 function Footer({ name, year }: FooterProps) {
@@ -55,8 +55,8 @@ function Footer({ name, year }: FooterProps) {
 
         <FooterLinkGroup title="Navegação">
           <FooterLink href="/criancas">Crianças</FooterLink>
-          <FooterLink href="/conversacao">Conversação</FooterLink>
-          <FooterLink href="/jogos">Jogos</FooterLink>
+          <FooterLink href="/#conversacao">Conversação</FooterLink>
+          <FooterLink href="/#jogos">Jogos</FooterLink>
           <FooterLink href="/dashboard">Dashboard</FooterLink>
         </FooterLinkGroup>
 
@@ -67,7 +67,6 @@ function Footer({ name, year }: FooterProps) {
         <FooterLinkGroup title="Links Úteis">
           <FooterLink href="/sobre">Sobre nós</FooterLink>
         </FooterLinkGroup>
-
       </div>
     </footer>
   );
