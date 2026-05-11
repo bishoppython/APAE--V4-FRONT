@@ -12,6 +12,7 @@ import Home from "@/pages/home";
 import { Necessities } from "@/pages/conversation/necessities";
 import { ColorMixer } from "@/pages/conversation/color_mixer";
 import { Numbers } from "@/pages/conversation/numbers";
+import { Calculator } from "@/pages/conversation/calculator";
 import { Animals } from "@/pages/conversation/animals";
 import { Colors } from "@/pages/conversation/colors";
 
@@ -46,7 +47,7 @@ export function AppRouter() {
                     <Route path="/necessidades" element={<Necessities />} />
                     <Route path="/cores" element={<Colors />} />
                     <Route path="/numeros" element={<Numbers />} />
-                    <Route path="/calculadora" element={<Numbers />} />
+                    <Route path="/calculadora" element={<Calculator />} />
                     <Route path="/animais" element={<Animals />} />
                     <Route path="/misturando-cores" element={<ColorMixer />} />
 
