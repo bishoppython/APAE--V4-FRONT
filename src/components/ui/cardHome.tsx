@@ -10,9 +10,9 @@ export interface CardHomeProps {
 export function CardHome({ img, title, description, href }: CardHomeProps) {
     return (
         <Link to={href || `/${title}`} draggable={false} className="block group outline-none focus-visible:ring-4 focus-visible:ring-[#00C4CC] rounded-3xl shrink-0 snap-center">
-            <div className="w-[360px] h-[460px] sm:w-[420px] sm:h-[520px] bg-white rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col items-center p-8 border-2 border-transparent hover:border-[#00C4CC]/20 relative overflow-hidden">
-                
-                <div className="w-full h-[200px] sm:h-[260px] bg-gradient-to-br from-[#E6F2F9] to-[#F3F8FB] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-500 shadow-inner overflow-hidden flex-shrink-0">
+            <div className="w-full max-w-[360px] h-[460px] sm:max-w-[420px] sm:h-[520px] bg-white rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col items-center p-8 border-2 border-transparent hover:border-[#00C4CC]/20 relative overflow-hidden">
+
+                <div className="w-full h-[200px] sm:h-[260px] bg-linear-to-br from-[#E6F2F9] to-[#F3F8FB] rounded-2xl flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-500 shadow-inner overflow-hidden shrink-0">
                     <img src={img} alt={title} draggable={false} className="w-full h-full object-cover pointer-events-none" />
                 </div>
 

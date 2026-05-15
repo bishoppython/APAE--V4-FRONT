@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageContainer, PageTitle } from "@/components/ui/page_components";
 import { useTTS } from "@/libs/text-to-speech";
 
@@ -41,11 +41,11 @@ function CalcButton({
             className={`relative bg-transparent cursor-pointer outline-none transition-[filter] duration-250 focus-visible:outline-2 focus-visible:outline-[#efc936] focus-visible:outline-offset-4 w-[3.5rem] h-[3.5rem] sm:w-[4.5rem] sm:h-[4.5rem] p-0 font-poppins text-[1.25rem] sm:text-[1.75rem] group ${className}`}
             onClick={handleClick}
         >
-            <span className={`absolute top-0 left-0 w-full h-full rounded-[0.5rem] blur-[2px] transform translate-y-[2px] transition-transform duration-600 ease-[cubic-bezier(0.3,0.7,0.4,1)] group-hover:translate-y-[4px] group-hover:duration-250 group-active:translate-y-[1px] group-active:duration-34 ${shadowColor}`}></span>
-            
-            <span className={`absolute top-0 left-0 w-full h-full rounded-[0.5rem] ${edgeColor}`}></span>
-            
-            <span className={`block absolute top-0 left-0 w-full h-full rounded-[0.5rem] text-[#eee] font-semibold uppercase tracking-[1.5px] text-[1.25rem] sm:text-[1.5rem] transform translate-y-[-4px] transition-transform duration-600 ease-[cubic-bezier(0.3,0.7,0.4,1)] group-hover:translate-y-[-6px] group-hover:duration-250 group-active:translate-y-[-2px] group-active:duration-34 flex items-center justify-center ${frontColor}`}>
+            <span className={`absolute top-0 left-0 w-full h-full rounded-lg blur-[2px] transform translate-y-[2px] transition-transform duration-600 ease-[cubic-bezier(0.3,0.7,0.4,1)] group-hover:translate-y-[4px] group-hover:duration-250 group-active:translate-y-[1px] group-active:duration-34 ${shadowColor}`}></span>
+
+            <span className={`absolute top-0 left-0 w-full h-full rounded-lg ${edgeColor}`}></span>
+
+            <span className={`flex absolute top-0 left-0 w-full h-full rounded-lg text-[#eee] font-semibold uppercase tracking-[1.5px] text-[1.25rem] sm:text-[1.5rem] transform translate-y-[-4px] transition-transform duration-600 ease-[cubic-bezier(0.3,0.7,0.4,1)] group-hover:translate-y-[-6px] group-hover:duration-250 group-active:translate-y-[-2px] group-active:duration-34 flex items-center justify-center ${frontColor}`}>
                 {label}
             </span>
         </button>
@@ -79,22 +79,65 @@ export function Calculator() {
         setDisplayExpression("");
     };
 
+    const [shouldSpeak, setShouldSpeak] = useState(false);
+    const { play: playResult } = useTTS({ text: displayExpression });
+
+    useEffect(() => {
+        if (shouldSpeak && displayExpression) {
+            // Pequeno delay para garantir que o som do botão "=" (Igual) termine ou não atropele
+            const timer = setTimeout(() => {
+                playResult();
+                setShouldSpeak(false);
+            }, 150);
+            return () => clearTimeout(timer);
+        }
+    }, [displayExpression, shouldSpeak, playResult]);
+
     const handleCalculate = () => {
         try {
             // eslint-disable-next-line no-eval
             const result = eval(realExpression);
             if (Number.isFinite(result)) {
-                setRealExpression(result.toString());
-                setDisplayExpression(result.toString());
+                const resultStr = result.toString();
+                setRealExpression(resultStr);
+                setDisplayExpression(resultStr);
+                setShouldSpeak(true);
             } else {
                 setRealExpression("");
                 setDisplayExpression("Erro");
+                setShouldSpeak(true);
             }
         } catch (error) {
             setRealExpression("");
             setDisplayExpression("Erro");
+            setShouldSpeak(true);
         }
     };
+
+    const CALC_BUTTONS: { 
+        label: string; 
+        textToSpeak: string; 
+        variant?: "default" | "red" | "green";
+        onClick?: () => void;
+        value?: string;
+    }[] = [
+        { label: "1", textToSpeak: "Um" },
+        { label: "2", textToSpeak: "Dois" },
+        { label: "3", textToSpeak: "Três" },
+        { label: "C", textToSpeak: "Apagar", variant: "red", onClick: handleClear },
+        { label: "4", textToSpeak: "Quatro" },
+        { label: "5", textToSpeak: "Cinco" },
+        { label: "6", textToSpeak: "Seis" },
+        { label: "×", textToSpeak: "Vezes", value: "*" },
+        { label: "7", textToSpeak: "Sete" },
+        { label: "8", textToSpeak: "Oito" },
+        { label: "9", textToSpeak: "Nove" },
+        { label: "÷", textToSpeak: "Dividido", value: "/" },
+        { label: "+", textToSpeak: "Mais" },
+        { label: "0", textToSpeak: "Zero" },
+        { label: "-", textToSpeak: "Menos" },
+        { label: "=", textToSpeak: "Igual", variant: "green", onClick: handleCalculate },
+    ];
 
     return (
         <PageContainer>
@@ -102,7 +145,7 @@ export function Calculator() {
 
             <div className="flex justify-center items-center w-full mt-4 sm:mt-8">
                 <div className="flex flex-col w-fit max-w-full border-[3px] border-[#333] shadow-[0px_4px_30px_#73b369] rounded-[1.25rem] p-4 bg-[#a5cd50]">
-                    
+
                     <input
                         className="pointer-events-none text-right font-poppins text-[1.5rem] sm:text-[2rem] h-[4rem] sm:h-[5rem] text-[#eee] bg-[#3a3231] border border-[#333] rounded-[0.625rem] px-4 py-2 mb-4 w-full box-border"
                         type="text"
@@ -111,25 +154,21 @@ export function Calculator() {
                     />
 
                     <div className="grid grid-cols-4 gap-3 w-full mx-auto">
-                        <CalcButton label="1" textToSpeak="Um" onClick={handleInput} />
-                        <CalcButton label="2" textToSpeak="Dois" onClick={handleInput} />
-                        <CalcButton label="3" textToSpeak="Três" onClick={handleInput} />
-                        <CalcButton label="C" textToSpeak="Apagar" onClick={handleClear} variant="red" />
-
-                        <CalcButton label="4" textToSpeak="Quatro" onClick={handleInput} />
-                        <CalcButton label="5" textToSpeak="Cinco" onClick={handleInput} />
-                        <CalcButton label="6" textToSpeak="Seis" onClick={handleInput} />
-                        <CalcButton label="×" textToSpeak="Vezes" onClick={() => handleInput("*")} />
-
-                        <CalcButton label="7" textToSpeak="Sete" onClick={handleInput} />
-                        <CalcButton label="8" textToSpeak="Oito" onClick={handleInput} />
-                        <CalcButton label="9" textToSpeak="Nove" onClick={handleInput} />
-                        <CalcButton label="÷" textToSpeak="Dividido" onClick={() => handleInput("/")} />
-
-                        <CalcButton label="+" textToSpeak="Mais" onClick={handleInput} />
-                        <CalcButton label="0" textToSpeak="Zero" onClick={handleInput} />
-                        <CalcButton label="-" textToSpeak="Menos" onClick={handleInput} />
-                        <CalcButton label="=" textToSpeak="Igual" onClick={handleCalculate} variant="green" />
+                        {CALC_BUTTONS.map((btn) => (
+                            <CalcButton
+                                key={btn.label}
+                                label={btn.label}
+                                textToSpeak={btn.textToSpeak}
+                                variant={btn.variant}
+                                onClick={() => {
+                                    if (btn.onClick) {
+                                        btn.onClick();
+                                    } else {
+                                        handleInput(btn.value || btn.label);
+                                    }
+                                }}
+                            />
+                        ))}
                     </div>
 
                 </div>

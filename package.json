@@ -1,7 +1,7 @@
 {
   "name": "apae-v4-web",
   "private": true,
-  "version": "4.5.0",
+  "version": "4.6.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -21,6 +21,7 @@
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.11.0",
     "react": "^19.2.4",
