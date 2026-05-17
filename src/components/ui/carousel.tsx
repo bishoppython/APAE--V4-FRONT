@@ -7,6 +7,7 @@ import useEmblaCarousel, {
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
 
 import { cn } from "@/libs/utils"
+import { PageTitle } from "@/components/ui/page_components"
 
 type CarouselApi = UseEmblaCarouselType[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
@@ -33,11 +34,6 @@ const CarouselContext = React.createContext<CarouselContextProps | null>(null)
 
 function useCarousel() {
     const context = React.useContext(CarouselContext)
-
-    if (!context) {
-        throw new Error("useCarousel must be used within a <Carousel />")
-    }
-
     return context
 }
 
@@ -161,7 +157,7 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
             aria-roledescription="slide"
             data-slot="carousel-item"
             className={cn(
-                "min-w-0 shrink-0 grow-0 basis-full md:basis-1/4",
+                "min-w-0 shrink-0 grow-0 basis-full md:basis-1/2 lg:basis-1/3 xl:basis-1/4",
                 orientation === "horizontal" ? "pl-6" : "pt-6",
                 className
             )}
@@ -222,6 +218,43 @@ function CarouselNext({
     )
 }
 
+function CarouselHeader({ className, ...props }: React.ComponentProps<"div">) {
+    return (
+        <div
+            className={cn("flex items-center justify-center flex-col gap-6", className)}
+            {...props}
+        />
+    )
+}
+
+function CarouselIcon({ className, ...props }: React.ComponentProps<"img">) {
+    return (
+        <img
+            className={cn("h-30 object-contain", className)}
+            alt=""
+            {...props}
+        />
+    )
+}
+
+function CarouselTitle({ className, ...props }: React.ComponentProps<typeof PageTitle>) {
+    return (
+        <PageTitle
+            className={cn("mt-8", className)}
+            {...props}
+        />
+    )
+}
+
+function CarouselDescription({ className, ...props }: React.ComponentProps<"p">) {
+    return (
+        <p
+            className={cn("text-center text-xl font-semibold text-black leading-10 max-w-150", className)}
+            {...props}
+        />
+    )
+}
+
 export {
     type CarouselApi,
     Carousel,
@@ -229,5 +262,9 @@ export {
     CarouselItem,
     CarouselPrevious,
     CarouselNext,
+    CarouselHeader,
+    CarouselIcon,
+    CarouselTitle,
+    CarouselDescription,
     useCarousel,
 }

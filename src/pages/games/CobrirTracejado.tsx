@@ -116,14 +116,14 @@ const META_BASE = 1000;
 
 export default function CobrirTracejado() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  
+
   const [started, setStarted] = useState(false);
   const [nivelAtual, setNivelAtual] = useState(0);
   const [tentativas, setTentativas] = useState(3);
   const [mensagem, setMensagem] = useState("");
   const [jogoFinalizado, setJogoFinalizado] = useState(false);
   const [desistiu, setDesistiu] = useState(false);
-  
+
   // Controle de desenho
   const [desenhando, setDesenhando] = useState(false);
   const comprimentoTracadoRef = useRef(0);
@@ -154,12 +154,12 @@ export default function CobrirTracejado() {
     ctx.lineWidth = 5;
     ctx.strokeStyle = "#a8a8a8";
     ctx.setLineDash([10, 10]);
-    
+
     // Desenha o tracejado alvo
     if (desenhos[nivelAtual]) {
       desenhos[nivelAtual](ctx);
     }
-    
+
     comprimentoTracadoRef.current = 0;
   };
 
@@ -197,7 +197,7 @@ export default function CobrirTracejado() {
     setDesenhando(true);
     const { x, y } = obterCoordenadas(e, canvas);
     ultimoPontoRef.current = { x, y };
-    
+
     ctx.beginPath();
     ctx.moveTo(x, y);
   };
@@ -262,8 +262,8 @@ export default function CobrirTracejado() {
         setTentativas(novasTentativas);
         setMensagem(`Ainda não completou! Você cobriu ${porcentagem.toFixed(1)}%. Tente novamente.`);
         setTimeout(() => {
-            desenharBase();
-            setMensagem("");
+          desenharBase();
+          setMensagem("");
         }, 3000);
       } else {
         setTentativas(0);
@@ -321,7 +321,7 @@ export default function CobrirTracejado() {
               )}
             </div>
 
-            <div className="border-4 border-dashed border-gray-300 rounded-2xl overflow-hidden bg-white mb-6 relative" style={{ touchAction: 'none' }}>
+            <div className="border-4 border-gray-300 rounded-2xl overflow-hidden bg-white mb-6 relative" style={{ touchAction: 'none' }}>
               <canvas
                 ref={canvasRef}
                 width={400}
@@ -360,7 +360,7 @@ export default function CobrirTracejado() {
       {(desistiu || jogoFinalizado) && (
         <div className="flex flex-col items-center justify-center p-6 min-h-[80vh]">
           {desistiu && (
-             <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-orange-500 animate-pop-in">
+            <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-orange-500 animate-pop-in">
               <div className="mx-auto w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mb-6">
                 <span className="text-orange-500 text-5xl font-bold">!</span>
               </div>

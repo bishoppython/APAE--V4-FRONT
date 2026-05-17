@@ -102,7 +102,7 @@ const Header: React.FC<HeaderProps> = ({ userName = "Fulano da Silva" }) => {
   }, [location.pathname, location.hash]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-40 flex flex-col md:flex-row items-center gap-3 md:gap-0 justify-between px-4 sm:px-10 py-2 bg-white/80 backdrop-blur-sm shadow-sm font-sans">
+    <header className="fixed mb-20 inset-x-0 top-0 z-40 flex flex-col md:flex-row items-center gap-3 md:gap-0 justify-between px-4 sm:px-10 py-2 bg-white/80 backdrop-blur-sm shadow-sm font-sans">
       <Link to="/" className="flex items-center gap-2 flex-none cursor-pointer hover:scale-105 transition-transform duration-500">
         <img src="icon.svg" alt="Logo" className="size-12" />
         <h1 className="text-3xl font-bold text-gray-900 tracking-tight">

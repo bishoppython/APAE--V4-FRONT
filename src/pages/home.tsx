@@ -1,4 +1,4 @@
-import { PageContainer, PageTitle } from "@/components/ui/page_components";
+import { PageContainer } from "@/components/ui/page_components";
 import { CardHome } from "@/components/ui/cardHome";
 import {
   Carousel,
@@ -6,12 +6,14 @@ import {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselHeader,
+  CarouselIcon,
+  CarouselTitle,
+  CarouselDescription,
 } from "@/components/ui/carousel";
 
 import controle from "../assets/images/controle.png";
 import livro from "../assets/images/livro.png";
-
-
 
 export default function Home() {
   const GAMES_DATA = [
@@ -104,19 +106,19 @@ export default function Home() {
 
   return (
     <PageContainer className="w-full overflow-x-hidden">
-      <div
+      <CarouselHeader
         id="jogos"
-        className="flex items-center justify-center flex-col gap-6 mt-16 md:mt-24"
+        className="mt-10 md:mt-16"
       >
-        <img className="h-[120px] object-contain" src={controle} alt="" />
-        <PageTitle className="mt-8 bg-gradient-to-r from-[#00C4CC] to-[#8B3DFF] text-transparent bg-clip-text">
+        <CarouselIcon src={controle} />
+        <CarouselTitle className="bg-linear-to-r from-[#00C4CC] to-[#8B3DFF] text-transparent bg-clip-text">
           Jogos e Desafios
-        </PageTitle>
-        <p className="text-center text-xl font-semibold text-black font-normal leading-10 max-w-[600px] ">
+        </CarouselTitle>
+        <CarouselDescription>
           Cada jogo foi pensado para estimular diferentes habilidades e
           estimular o aprendizado.
-        </p>
-      </div>
+        </CarouselDescription>
+      </CarouselHeader>
 
       <Carousel className="w-full">
         <CarouselContent className="pb-20 px-4 md:px-8">
@@ -133,19 +135,16 @@ export default function Home() {
         <CarouselNext />
       </Carousel>
 
-      <div
-        id="conversacao"
-        className="flex items-center justify-center flex-col gap-6 mt-16 md:mt-24"
-      >
-        <img className="h-[120px] object-contain" src={livro} alt="" />
-        <PageTitle className="mt-8 bg-gradient-to-r from-[#FF2D83] to-[#8B3DFF] bg-clip-text text-transparent">
+      <CarouselHeader id="conversacao">
+        <CarouselIcon src={livro} />
+        <CarouselTitle className="bg-linear-to-r from-[#FF2D83] to-[#8B3DFF] bg-clip-text text-transparent">
           Conversação e Escuta
-        </PageTitle>
-        <p className="text-center text-xl font-semibold text-black font-normal leading-10 max-w-[600px] ">
+        </CarouselTitle>
+        <CarouselDescription>
           Explore atividades que auxiliam no desenvolvimento da comunicação e
           compreensão auditiva.
-        </p>
-      </div>
+        </CarouselDescription>
+      </CarouselHeader>
 
       <Carousel className="w-full">
         <CarouselContent className="pb-20 px-4 md:px-8">
