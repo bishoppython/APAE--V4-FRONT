@@ -93,6 +93,23 @@ const getImageUrl = (name: string) => {
     return new URL(`../../assets/images/${folder}/${name}.png`, import.meta.url).href;
 };
 
+const efeitoAcerto = new URL(
+    "../../assets/sounds/efeitos/efeito-acerto.mp3",
+    import.meta.url,
+).href;
+const efeitoErro = new URL(
+    "../../assets/sounds/efeitos/efeito-erro.mp3",
+    import.meta.url,
+).href;
+const efeitoDerrota = new URL(
+    "../../assets/sounds/efeitos/efeito-derrota.mp3",
+    import.meta.url,
+).href;
+const efeitoVitoria = new URL(
+    "../../assets/sounds/efeitos/efeito-vitória.mp3",
+    import.meta.url,
+).href;
+
 export default function Soletrando() {
     
     const [pontos, setPontos] = useState(0);
@@ -166,7 +183,7 @@ export default function Soletrando() {
 
         if (novaTentativa.length === palavraAlvo.length) {
             if (novaTentativa.toLowerCase() === palavraAlvo.toLowerCase()) {
-                playAudio("/audio/efeito_acerto.mp3");
+                playAudio(efeitoAcerto);
                 setPontos(prev => prev + 10);
                 setFeedback({ texto: "✅ Correto! Próxima palavra...", tipo: "correto" });
                 setPalavrasErradas(prev => prev.filter(p => p.palavra !== palavraAtual.palavra));
@@ -175,9 +192,10 @@ export default function Soletrando() {
             } else {
                 const novasTentativas = tentativas + 1;
                 setTentativas(novasTentativas);
-                playAudio("/audio/efeito-erro.mp3");
+                playAudio(efeitoErro);
 
                 if (novasTentativas >= maxTentativas) {
+                    playAudio(efeitoDerrota);
                     setFeedback({ texto: `❌ Fim de Jogo! A palavra era ${palavraAtual.palavra.toUpperCase()}`, tipo: "errado" });
 
                     // Finaliza o jogo após 2 segundos para dar tempo de ler e mostrar os pontos
@@ -224,7 +242,7 @@ export default function Soletrando() {
             } else {
                 setGameState('won');
                 setFeedback({ texto: "🎉 Parabéns! Você completou todas as palavras!", tipo: "correto" });
-                playAudio("/audio/efeito-vitória.mp3");
+                playAudio(efeitoVitoria);
                 confetti({ particleCount: 300, spread: 120, origin: { y: 0.6 } });
                 return prevErradas;
             }

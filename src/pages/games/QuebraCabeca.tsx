@@ -3,6 +3,15 @@ import { Link } from "react-router-dom";
 import { Trophy } from "lucide-react";
 import confetti from "canvas-confetti";
 
+const efeitoAcerto = new URL(
+  "../../assets/sounds/efeitos/efeito-acerto.mp3",
+  import.meta.url,
+).href;
+const efeitoVitoria = new URL(
+  "../../assets/sounds/efeitos/efeito-vitória.mp3",
+  import.meta.url,
+).href;
+
 const animaisData = [
   { id: "elefante", nome: "Elefante" },
   { id: "leao", nome: "Leão" },
@@ -191,16 +200,18 @@ export default function QuebraCabeca() {
         novoTabuleiro[indexAntigo] = null;
       }
 
+      const colocouCerto = pecaSelecionada.posicaoOriginal === index;
+
       setTabuleiro(novoTabuleiro);
       setPecasDisponiveis(novasDisponiveis);
       setPecaSelecionada(null);
 
       if (verificarVitoria(novoTabuleiro)) {
         setJogoFinalizado(true);
-        tocarAudio("/audio/efeito-vitória.mp3");
+        tocarAudio(efeitoVitoria);
         confetti({ particleCount: 300, spread: 120, origin: { y: 0.6 } });
-      } else {
-        tocarAudio("/audio/efeito_acerto.mp3");
+      } else if (colocouCerto) {
+        tocarAudio(efeitoAcerto);
       }
     } else {
       const peca = tabuleiro[index];
@@ -243,15 +254,17 @@ export default function QuebraCabeca() {
         novoTabuleiro[data.index] = pecaDestino;
       }
 
+      const colocouCerto = data.peca.posicaoOriginal === index;
+
       setTabuleiro(novoTabuleiro);
       setPecaSelecionada(null);
 
       if (verificarVitoria(novoTabuleiro)) {
         setJogoFinalizado(true);
-        tocarAudio("/audio/efeito-vitória.mp3");
+        tocarAudio(efeitoVitoria);
         confetti({ particleCount: 300, spread: 120, origin: { y: 0.6 } });
-      } else {
-        tocarAudio("/audio/efeito_acerto.mp3");
+      } else if (colocouCerto) {
+        tocarAudio(efeitoAcerto);
       }
     } catch (err) {
       console.error(err);

@@ -237,6 +237,23 @@ const getImageUrl = (name: string) => {
     .href;
 };
 
+const efeitoAcerto = new URL(
+  "../../assets/sounds/efeitos/efeito-acerto.mp3",
+  import.meta.url,
+).href;
+const efeitoErro = new URL(
+  "../../assets/sounds/efeitos/efeito-erro.mp3",
+  import.meta.url,
+).href;
+const efeitoDerrota = new URL(
+  "../../assets/sounds/efeitos/efeito-derrota.mp3",
+  import.meta.url,
+).href;
+const efeitoVitoria = new URL(
+  "../../assets/sounds/efeitos/efeito-vitória.mp3",
+  import.meta.url,
+).href;
+
 export default function AdivinhaAnimais() {
   const [categoria, setCategoria] = useState<"animais" | "cores">("animais");
   const [animaisRestantes, setAnimaisRestantes] = useState<typeof animaisData>(
@@ -287,7 +304,7 @@ export default function AdivinhaAnimais() {
   const proximaRodada = (restantes: typeof animaisData) => {
     if (restantes.length === 0) {
       setGameState("won");
-      tocarAudio("/audio/efeito-vitória.mp3");
+      tocarAudio(efeitoVitoria);
       confetti({
         particleCount: 300,
         spread: 120,
@@ -323,7 +340,7 @@ export default function AdivinhaAnimais() {
     if (animalSelecionado.id === animalAtual.id) {
       setPodeClicar(false);
       setIsShaking(false);
-      tocarAudio("/audio/efeito_acerto.mp3");
+      tocarAudio(efeitoAcerto);
       setMensagem("Muito bem! Você acertou! 🎉");
 
       setTimeout(() => {
@@ -331,7 +348,7 @@ export default function AdivinhaAnimais() {
       }, 2000);
     } else {
       setPodeClicar(false);
-      tocarAudio("/audio/efeito-erro.mp3");
+      tocarAudio(efeitoErro);
 
       const novosErros = erros + 1;
       setErros(novosErros);
@@ -339,6 +356,7 @@ export default function AdivinhaAnimais() {
       if (novosErros >= MAX_ERROS) {
         setIsShaking(true);
         setMensagem("Fim de Jogo! ❌");
+        tocarAudio(efeitoDerrota);
         setTimeout(() => {
           setGameState("lost");
           setIsShaking(false);

@@ -7,6 +7,11 @@ import MenuGame from "@/components/MenuGame";
 import HeaderGame from "@/components/HeaderGame";
 import InstructionsGame from "@/components/InstructionsGame";
 
+const efeitoVitoria = new URL(
+  "../../assets/sounds/efeitos/efeito-vitória.mp3",
+  import.meta.url,
+).href;
+
 // --- Funções Auxiliares (Legado) ---
 function rand(max: number) {
   return Math.floor(Math.random() * max);
@@ -499,6 +504,11 @@ export default function Labirinto() {
   const spriteRef = useRef<HTMLImageElement | null>(null);
   const finishSpriteRef = useRef<HTMLImageElement | null>(null);
 
+  const tocarAudio = (caminho: string) => {
+    const audio = new Audio(caminho);
+    audio.play().catch((e) => console.log("Erro ao reproduzir áudio:", e));
+  };
+
   // Carrega os sprites 1 vez quando o componente monta
   useEffect(() => {
     let completeOne = false;
@@ -606,6 +616,7 @@ export default function Labirinto() {
       const onGameWon = (mvs: number) => {
         setMoves(mvs);
         setGameState('won');
+        tocarAudio(efeitoVitoria);
         confetti({
           particleCount: 300,
           spread: 120,

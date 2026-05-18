@@ -6,6 +6,11 @@ import { OverlayResultado } from "@/components/OverlayResultado";
 import HeaderGame from "@/components/HeaderGame";
 import InstructionsGame from "@/components/InstructionsGame";
 
+// Importa efeitos sonoros
+const efeitoAcerto = new URL("../../assets/sounds/efeitos/efeito-acerto.mp3", import.meta.url).href;
+const efeitoErro = new URL("../../assets/sounds/efeitos/efeito-erro.mp3", import.meta.url).href;
+const efeitoVitoria = new URL("../../assets/sounds/efeitos/efeito-vitória.mp3", import.meta.url).href;
+
 interface Forma {
   id: string;
   nome: string;
@@ -196,13 +201,13 @@ export default function EncaixeFormas() {
         // Acertou!
         const novasEncaixadas = [...encaixadas, dragState.id];
         setEncaixadas(novasEncaixadas);
-        tocarAudio("/audio/efeito_acerto.mp3");
+        tocarAudio(efeitoAcerto);
 
         // Verifica vitória
         if (novasEncaixadas.length === formasData.length) {
           setTimeout(() => {
             setGameState('won');
-            tocarAudio("/audio/efeito-vitória.mp3");
+            tocarAudio(efeitoVitoria);
             confetti({
               particleCount: 300,
               spread: 120,
@@ -212,7 +217,7 @@ export default function EncaixeFormas() {
         }
       } else {
         // Errou, volta pro lugar
-        tocarAudio("/audio/efeito-erro.mp3");
+        tocarAudio(efeitoErro);
         setErroShapeId(dragState.id);
         setTimeout(() => setErroShapeId(null), 500);
 
@@ -222,6 +227,7 @@ export default function EncaixeFormas() {
         if (novosErros >= MAX_ERROS) {
           setTimeout(() => {
             setGameState('lost');
+            tocarAudio(efeitoErro);
           }, 500);
         }
       }

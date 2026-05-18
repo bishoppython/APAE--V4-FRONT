@@ -19,6 +19,19 @@ const categorias = {
 
 type Categoria = "aleatorio" | "animais" | "cores" | "comidas";
 
+const efeitoAcerto = new URL(
+    "../../assets/sounds/efeitos/efeito-acerto.mp3",
+    import.meta.url,
+).href;
+const efeitoErro = new URL(
+    "../../assets/sounds/efeitos/efeito-erro.mp3",
+    import.meta.url,
+).href;
+const efeitoVitoria = new URL(
+    "../../assets/sounds/efeitos/efeito-vitória.mp3",
+    import.meta.url,
+).href;
+
 export default function Memoria() {
     const [cartas, setCartas] = useState<Carta[]>([]);
     const [primeiraCarta, setPrimeiraCarta] = useState<number | null>(null);
@@ -26,6 +39,11 @@ export default function Memoria() {
     const [pontos, setPontos] = useState(0);
     const [categoriaSelecionada, setCategoriaSelecionada] = useState<Categoria>("aleatorio");
     const [gameState, setGameState] = useState<'menu' | 'playing' | 'won' | 'gaveUp'>('menu');
+
+        const tocarAudio = (caminho: string) => {
+                const audio = new Audio(caminho);
+                audio.play().catch(e => console.log("Erro ao reproduzir áudio:", e));
+        };
 
     const backToMenu = () => {
     setGameState('menu');
@@ -87,8 +105,10 @@ export default function Memoria() {
 
         if (isMatch) {
             setPontos(pts => pts + 10);
+            tocarAudio(efeitoAcerto);
         } else {
             setPontos(pts => Math.max(0, pts - 1));
+            tocarAudio(efeitoErro);
         }
 
         setCartas(prev => {
@@ -107,6 +127,7 @@ export default function Memoria() {
             setCartas(currentCartas => {
                 if (currentCartas.length > 0 && currentCartas.every(c => c.encontrada)) {
                     setGameState('won');
+                    tocarAudio(efeitoVitoria);
                     confetti({
                         particleCount: 300,
                         spread: 120,

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import confetti from "canvas-confetti";
 import { Link } from "react-router-dom";
 import { Trophy, RotateCcw } from "lucide-react";
 
@@ -113,6 +114,23 @@ const desenhos = [
 
 const totalNiveis = desenhos.length;
 const META_BASE = 1000;
+
+const efeitoAcerto = new URL(
+  "../../assets/sounds/efeitos/efeito-acerto.mp3",
+  import.meta.url,
+).href;
+const efeitoErro = new URL(
+  "../../assets/sounds/efeitos/efeito-erro.mp3",
+  import.meta.url,
+).href;
+const efeitoDerrota = new URL(
+  "../../assets/sounds/efeitos/efeito-derrota.mp3",
+  import.meta.url,
+).href;
+const efeitoVitoria = new URL(
+  "../../assets/sounds/efeitos/efeito-vitória.mp3",
+  import.meta.url,
+).href;
 
 export default function CobrirTracejado() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -243,7 +261,8 @@ export default function CobrirTracejado() {
       setMensagem("");
     } else {
       setJogoFinalizado(true);
-      tocarAudio("/audio/efeito-vitória.mp3");
+      tocarAudio(efeitoVitoria);
+      confetti({ particleCount: 300, spread: 120, origin: { y: 0.6 } });
     }
   };
 
@@ -251,13 +270,14 @@ export default function CobrirTracejado() {
     const porcentagem = (comprimentoTracadoRef.current / META_BASE) * 100;
 
     if (porcentagem >= 75) {
-      tocarAudio("/audio/efeito_acerto.mp3");
+      tocarAudio(efeitoAcerto);
       setMensagem("🎉 Parabéns! Você completou o desenho!");
       setTimeout(() => {
         proximoNivel();
       }, 2000);
     } else {
       const novasTentativas = tentativas - 1;
+      tocarAudio(efeitoErro);
       if (novasTentativas > 0) {
         setTentativas(novasTentativas);
         setMensagem(`Ainda não completou! Você cobriu ${porcentagem.toFixed(1)}%. Tente novamente.`);
@@ -303,7 +323,10 @@ export default function CobrirTracejado() {
                 Progresso: <span className="text-blue-600 font-bold">{nivelAtual + 1} / {totalNiveis}</span>
               </span>
               <button
-                onClick={() => setDesistiu(true)}
+                onClick={() => {
+                  tocarAudio(efeitoDerrota);
+                  setDesistiu(true);
+                }}
                 className="px-5 py-2 bg-red-100 hover:bg-red-200 rounded-lg cursor-pointer text-sm font-bold text-red-700 transition shadow-sm"
               >
                 Desistir
