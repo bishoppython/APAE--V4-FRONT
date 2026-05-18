@@ -113,7 +113,20 @@ const desenhos = [
 ];
 
 const totalNiveis = desenhos.length;
-const META_BASE = 1000;
+
+// Comprimento aproximado em pixels de cada desenho para a meta
+const METAS_BASE = [
+  820,  // Letra A
+  750,  // Letra B
+  240,  // Número 1
+  460,  // Número 2
+  550,  // Coração
+  780,  // Estrela
+  628,  // Círculo
+  640,  // Quadrado
+  680,  // Triângulo
+  740,  // Sol
+];
 
 const efeitoAcerto = new URL(
   "../../assets/sounds/efeitos/efeito-acerto.mp3",
@@ -146,6 +159,8 @@ export default function CobrirTracejado() {
   const [desenhando, setDesenhando] = useState(false);
   const comprimentoTracadoRef = useRef(0);
   const ultimoPontoRef = useRef({ x: 0, y: 0 });
+  const hitCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const pixelsMetaRef = useRef<number>(0);
 
   const tocarAudio = (caminho: string) => {
     const audio = new Audio(caminho);
@@ -178,6 +193,36 @@ export default function CobrirTracejado() {
       desenhos[nivelAtual](ctx);
     }
 
+    // Prepara o hitCanvas para calcular a área exata a ser coberta
+    if (!hitCanvasRef.current) {
+      const hitCanvas = document.createElement("canvas");
+      hitCanvas.width = canvas.width;
+      hitCanvas.height = canvas.height;
+      hitCanvasRef.current = hitCanvas;
+    }
+    
+    const hitCtx = hitCanvasRef.current.getContext("2d", { willReadFrequently: true });
+    if (hitCtx) {
+      hitCtx.clearRect(0, 0, hitCanvasRef.current.width, hitCanvasRef.current.height);
+      hitCtx.globalCompositeOperation = "source-over";
+      hitCtx.lineWidth = 30; // Área de tolerância generosa
+      hitCtx.lineCap = "round";
+      hitCtx.lineJoin = "round";
+      hitCtx.strokeStyle = "black";
+      
+      if (desenhos[nivelAtual]) {
+        desenhos[nivelAtual](hitCtx);
+      }
+
+      // Contar pixels iniciais que compõem a área alvo
+      const imageData = hitCtx.getImageData(0, 0, hitCanvasRef.current.width, hitCanvasRef.current.height);
+      let count = 0;
+      for (let i = 3; i < imageData.data.length; i += 4) {
+        if (imageData.data[i] > 0) count++;
+      }
+      pixelsMetaRef.current = count;
+    }
+
     comprimentoTracadoRef.current = 0;
   };
 
@@ -199,9 +244,12 @@ export default function CobrirTracejado() {
       clientY = (e as React.MouseEvent).clientY;
     }
 
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
     return {
-      x: clientX - rect.left,
-      y: clientY - rect.top
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
     };
   };
 
@@ -242,6 +290,20 @@ export default function CobrirTracejado() {
     ctx.beginPath();
     ctx.moveTo(x, y);
 
+    // Apaga a área correspondente no hitCanvas para marcar como "coberto"
+    if (hitCanvasRef.current) {
+      const hitCtx = hitCanvasRef.current.getContext("2d");
+      if (hitCtx) {
+        hitCtx.globalCompositeOperation = "destination-out";
+        hitCtx.lineWidth = 30; // Mesma largura da tolerância
+        hitCtx.lineCap = "round";
+        hitCtx.beginPath();
+        hitCtx.moveTo(ultimoX, ultimoY);
+        hitCtx.lineTo(x, y);
+        hitCtx.stroke();
+      }
+    }
+
     comprimentoTracadoRef.current += distancia;
     ultimoPontoRef.current = { x, y };
   };
@@ -267,7 +329,24 @@ export default function CobrirTracejado() {
   };
 
   const finalizarDesenho = () => {
-    const porcentagem = (comprimentoTracadoRef.current / META_BASE) * 100;
+    let porcentagem = 0;
+    if (hitCanvasRef.current && pixelsMetaRef.current > 0) {
+      const hitCtx = hitCanvasRef.current.getContext("2d");
+      if (hitCtx) {
+        const imageData = hitCtx.getImageData(0, 0, hitCanvasRef.current.width, hitCanvasRef.current.height);
+        let pixelsRestantes = 0;
+        for (let i = 3; i < imageData.data.length; i += 4) {
+          if (imageData.data[i] > 0) pixelsRestantes++;
+        }
+        
+        const cobertos = pixelsMetaRef.current - pixelsRestantes;
+        porcentagem = (cobertos / pixelsMetaRef.current) * 100;
+      }
+    } else {
+      // Fallback
+      const metaAtual = METAS_BASE[nivelAtual];
+      porcentagem = (comprimentoTracadoRef.current / metaAtual) * 100;
+    }
 
     if (porcentagem >= 75) {
       tocarAudio(efeitoAcerto);

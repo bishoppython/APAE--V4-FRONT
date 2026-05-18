@@ -276,10 +276,10 @@ export default function QuebraCabeca() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 font-poppins relative pb-24">
+    <div className="min-h-screen bg-gray-50 font-poppins relative pb-24">
       {!started && (
         <div className="flex flex-col items-center justify-center p-6 min-h-screen">
-          <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-4xl w-full border-t-8 border-blue-500 animate-pop-in">
+          <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-4xl w-full border-t-8 border-orange-500 animate-pop-in">
             <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">Quebra Cabeça</h1>
             <p className="text-gray-600 mb-8 font-medium text-lg">Escolha uma imagem para montar!</p>
             
@@ -288,7 +288,7 @@ export default function QuebraCabeca() {
                 <button
                   key={animal.id}
                   onClick={() => iniciarJogo(animal.id)}
-                  className="flex flex-col items-center gap-2 p-3 bg-gray-100 rounded-xl hover:bg-blue-100 hover:scale-105 transition-all shadow-sm border-2 border-transparent hover:border-blue-400 cursor-pointer"
+                  className="flex flex-col items-center gap-2 p-3 bg-gray-100 rounded-xl hover:bg-orange-100 hover:scale-105 transition-all shadow-sm border-2 border-transparent hover:border-orange-400 cursor-pointer"
                 >
                   <img 
                     src={getFullImageUrl(animal.id)} 
@@ -324,15 +324,15 @@ export default function QuebraCabeca() {
           <div className="flex flex-col md:flex-row gap-8 w-full mt-4 items-start justify-center">
             
             {/* Tabuleiro */}
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center bg-white p-4 md:p-6 rounded-2xl shadow-2xl flex-1 max-w-md w-full">
               <div 
-                className="grid grid-cols-5 bg-slate-800 rounded-xl shadow-xl relative isolate"
-                style={{ width: "min(90vw, 400px)", height: "min(90vw, 400px)", border: "4px solid #334155" }}
+                className="grid grid-cols-5 bg-white rounded-xl relative isolate overflow-hidden"
+                style={{ width: "100%", aspectRatio: "1/1", border: "4px solid #d1d5db" }}
               >
                 {/* Background visual grid to guide the user */}
                 <div className="absolute inset-0 grid grid-cols-5 grid-rows-5 pointer-events-none z-0 opacity-40">
                   {Array(25).fill(0).map((_, i) => (
-                    <div key={`bg-${i}`} className="border border-slate-600"></div>
+                    <div key={`bg-${i}`} className="border border-gray-300"></div>
                   ))}
                 </div>
 
@@ -343,10 +343,10 @@ export default function QuebraCabeca() {
                     onDragOver={handleDragOver}
                     onDrop={(e) => handleDropBoard(e, index)}
                     className={`relative w-full h-full cursor-pointer transition-colors z-10
-                      ${pecaSelecionada && !peca ? 'bg-white/10' : 'hover:bg-slate-600/50'}
+                      ${pecaSelecionada && !peca ? 'bg-orange-50' : 'hover:bg-gray-100'}
                     `}
                   >
-                    {!peca && <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40"><span className="text-slate-400 text-lg md:text-xl font-bold">{index + 1}</span></div>}
+                    {!peca && <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40"><span className="text-gray-400 text-lg md:text-xl font-bold">{index + 1}</span></div>}
                     {peca && (
                       <div 
                         draggable
@@ -359,13 +359,13 @@ export default function QuebraCabeca() {
                   </div>
                 ))}
               </div>
-              <p className="text-gray-500 mt-4 text-sm font-medium">Toque em uma peça abaixo e depois em um espaço, ou arraste-a!</p>
+              <p className="text-gray-500 mt-6 text-sm font-medium text-center">Toque em uma peça ao lado e depois em um espaço, ou arraste-a!</p>
             </div>
 
             {/* Peças Disponíveis */}
-            <div className="flex-1 w-full bg-slate-800 p-4 rounded-2xl shadow-inner border-4 border-slate-700 flex flex-col">
-              <h3 className="font-bold text-slate-200 mb-3 text-center">Peças ({pecasDisponiveis.length})</h3>
-              <div className="flex flex-wrap gap-4 justify-center max-h-[400px] overflow-y-auto p-4 content-start">
+            <div className="flex-1 w-full bg-white p-4 md:p-6 rounded-2xl shadow-2xl flex flex-col max-w-md">
+              <h3 className="font-bold text-gray-700 mb-4 text-center text-lg border-b border-gray-100 pb-2">Peças Disponíveis ({pecasDisponiveis.length})</h3>
+              <div className="flex flex-wrap gap-4 justify-center max-h-[400px] overflow-y-auto p-2 content-start">
                 {pecasDisponiveis.map(peca => (
                   <div
                     key={peca.id}
@@ -373,7 +373,7 @@ export default function QuebraCabeca() {
                     draggable
                     onDragStart={(e) => handleDragStartPool(e, peca)}
                     className={`cursor-grab active:cursor-grabbing transition-transform hover:scale-110 w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center
-                      ${pecaSelecionada?.id === peca.id ? 'ring-4 ring-yellow-400 scale-110 rounded-lg bg-white/10' : ''}
+                      ${pecaSelecionada?.id === peca.id ? 'ring-4 ring-orange-500 scale-110 rounded-lg bg-orange-50 shadow-md' : ''}
                     `}
                   >
                     <SvgPiece peca={peca} animalId={animalSelecionado} isBoard={false} />
@@ -398,7 +398,7 @@ export default function QuebraCabeca() {
               <img src={getFullImageUrl(animalSelecionado)} alt="Completo" className="w-48 h-48 mx-auto rounded-xl shadow-md mb-8" />
               <button
                 onClick={() => setStarted(false)}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-xl shadow-md text-lg transition-transform hover:scale-105 active:scale-95"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-4 rounded-xl shadow-md text-lg transition-transform hover:scale-105 active:scale-95"
               >
                 Jogar Outro
               </button>
@@ -411,7 +411,7 @@ export default function QuebraCabeca() {
               <p className="text-xl text-gray-700 mb-8">Você desistiu de montar o quebra cabeça.</p>
               <button
                 onClick={() => setStarted(false)}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-4 px-4 rounded-xl shadow-md text-lg mb-3 transition-transform hover:scale-105 active:scale-95"
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-4 rounded-xl shadow-md text-lg mb-3 transition-transform hover:scale-105 active:scale-95"
               >
                 Tentar Outro
               </button>
