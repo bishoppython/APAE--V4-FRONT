@@ -3,7 +3,8 @@ import { cn } from "@/libs/utils";
 export function PageContainer({ children, className }: React.ComponentProps<'main'>) {
     return (
         <main className={cn(
-            'w-full max-w-full overflow-x-hidden box-border mt-30 md:mt-[15vh]',
+            'flex flex-col min-h-[60vh] px-4 py-6 md:pb-16 items-center justify-between gap-2 sm:gap-8',
+            'mt-30 md:mt-[15vh]',
             className
         )}>
             {children}

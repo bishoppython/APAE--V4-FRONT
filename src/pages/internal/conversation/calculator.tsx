@@ -189,7 +189,7 @@ export function Calculator() {
         ];
 
     return (
-        <PageContainer className="py-10 select-none flex flex-col items-center justify-center">
+        <PageContainer className="select-none flex flex-col items-center justify-center">
             {/* Animating styles */}
             <style>{`
                 @keyframes blink {
@@ -210,8 +210,8 @@ export function Calculator() {
                 }
             `}</style>
 
-            <div className="flex pt-15 justify-center items-center w-full">
-                <div className="relative mt-10 px-0 md:px-8">
+            <div className="flex justify-center items-center w-full">
+                <div className="relative px-0 md:px-8">
                     {/* Left Arm SVG*/}
                     <div className="hidden lg:block absolute -left-4 bottom-[30%] z-0 select-none pointer-events-none transform -translate-x-1/2">
                         <svg width="80" height="92" viewBox="0 0 60 70" fill="none" xmlns="http://www.w3.org/2000/svg">

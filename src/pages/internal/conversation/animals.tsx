@@ -164,7 +164,7 @@ type AnimalCategory = 'empty' | 'jungle' | 'domestic' | 'ocean' | 'farm';
 function AnimalCards({ animal }: { animal: IAnimal }) {
     const { play } = useTTS({ text: animal.title });
 
-    const imageUrl = new URL(`../../assets/images/animais/${animal.image}`, import.meta.url).href;
+    const imageUrl = new URL(`../../../assets/images/animais/${animal.image}`, import.meta.url).href;
 
     return (
         <CardContainer onClick={play} value={animal.id}>
