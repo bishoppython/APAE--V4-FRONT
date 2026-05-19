@@ -87,7 +87,7 @@ const getImageUrl = (name: string) => {
         "gato", "cachorro", "peixe", "pato", "macaco", "elefante", "girafa", "leao", "tigre", "urso",
         "onca", "rinoceronte", "zebra", "hamster", "coelho", "golfinho", "baleia", "tubarao",
         "estrela_do_mar", "polvo", "cavalo_marinho", "tartaruga_marinha", "cavalo", "vaca",
-        "galinha", "porco", "ovelha"
+        "galinha", "porco", "ovelha", "guaxinim"
     ].includes(name);
     const folder = isAnimal ? "animais" : "soletrando";
     return new URL(`../../assets/images/${folder}/${name}.png`, import.meta.url).href;
