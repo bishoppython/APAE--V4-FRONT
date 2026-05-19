@@ -4,6 +4,8 @@
 @import "tailwindcss";
 
 @theme {
+    --breakpoint-3xl: 128rem;
+    --breakpoint-4xl: 160rem;
     --color-primary: rgba(252, 211, 19, 1);
     --color-secondary: rgba(176, 186, 195, 1);
     --color-foreground: rgba(124, 131, 138, 1);

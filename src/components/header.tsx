@@ -2,14 +2,13 @@ import React, { useEffect, useState } from "react";
 import { User } from "lucide-react";
 import { cn } from "@/libs/utils";
 import { Link, useLocation } from "react-router-dom";
+import { useAuthStore } from "@/stores/AuthStore";
 
-interface HeaderProps {
-  userName?: string;
-}
-
-const Header: React.FC<HeaderProps> = ({ userName = "Fulano da Silva" }) => {
-  const [activeItem, setActiveItem] = useState("Crianças");
+const Header: React.FC = () => {
+  const [activeItem, setActiveItem] = useState("Jogos");
   const location = useLocation();
+  const user = useAuthStore((state) => state.user);
+
   const menuItems = [
     { name: "Crianças", href: "/criancas" },
     { name: "Jogos", href: "/#jogos" },
@@ -209,7 +208,7 @@ return (
         aria-label="Perfil do usuário"
         className="hidden sm:flex items-center gap-2 md:gap-3 flex-none"
       >
-        <span className="text-xs md:text-sm font-medium text-gray-700">{userName}</span>
+        <span className="text-xs md:text-sm font-medium text-gray-700">{user?.name}</span>
         <div className="p-1.5 bg-gray-100 rounded-full text-gray-500" aria-hidden="true">
           <User className="w-4 h-4 md:w-5 md:h-5" strokeWidth={1.5} />
         </div>

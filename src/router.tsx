@@ -1,5 +1,5 @@
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 
 import Header from "./components/header";
 import Footer from "./components/footer";
@@ -17,6 +17,8 @@ const Calculator = lazy(() => import("@/pages/conversation/calculator").then(mod
 const Animals = lazy(() => import("@/pages/conversation/animals").then(module => ({ default: module.Animals })));
 const Colors = lazy(() => import("@/pages/conversation/colors").then(module => ({ default: module.Colors })));
 
+import { useAuthStore } from "./stores/AuthStore";
+
 const Soletrando = lazy(() => import("@/pages/games/Soletrando"));
 const Labirinto = lazy(() => import("@/pages/games/Labirinto"));
 const Memoria = lazy(() => import("@/pages/games/Memoria"));
@@ -24,6 +26,15 @@ const AdivinhaAnimais = lazy(() => import("./pages/games/AdivinhaAnimais"));
 const EncaixeFormas = lazy(() => import("./pages/games/EncaixeFormas"));
 const CobrirTracejado = lazy(() => import("./pages/games/CobrirTracejado"));
 const QuebraCabeca = lazy(() => import("./pages/games/QuebraCabeca"));
+
+export function ProtectedRoute() {
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+    return <Outlet />;
+}
 
 function MainLayout() {
     return (
@@ -44,6 +55,8 @@ function MainLayout() {
 export function AppRouter() {
     return (
         <BrowserRouter>
+            <Routes>
+                <Route element={<ProtectedRoute />}>
             <Suspense fallback={
                 <div className="flex items-center justify-center min-h-screen">
                     <div className="w-12 h-12 border-4 border-t-blue-500 border-blue-200 rounded-full animate-spin"></div>
@@ -72,6 +85,7 @@ export function AppRouter() {
                         <Route path="/cobrir-tracejado" element={<CobrirTracejado />} />
                         <Route path="/quebra-cabeca" element={<QuebraCabeca />} />
                     </Route>
+                </Route>
 
                     <Route path="/login" element={<Login />} />
                     <Route path="/login-crianca" element={<ChildLogin />} />
