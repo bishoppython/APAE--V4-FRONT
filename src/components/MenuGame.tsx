@@ -35,16 +35,20 @@ export default function MenuGame({
   const corBtn = cores[corDestaque as keyof typeof cores].split(' ').slice(1).join(' ');
 
   return (
-    <div className={`bg-white p-8 rounded-2xl shadow-xl text-center max-w-md w-full mx-4 border-t-8 ${corBorder} animate-pop-in`}>
+    <section 
+      role="region"
+      aria-labelledby="game-menu-title"
+      className={`bg-white p-6 md:p-8 rounded-2xl  text-center w-full max-w-sm mx-auto border-t-8 ${corBorder} animate-pop-in`}
+    >
       
       {/* Área dos Ícones/Imagens */}
       {icones && (
-        <div className="flex justify-center items-center mb-6 space-x-6">
+        <div aria-hidden="true" className="flex justify-center items-center mb-6 gap-4">
           {icones}
         </div>
       )}
 
-      <h1 className="text-3xl font-bold mb-4 text-gray-800">{titulo}</h1>
+      <h1 id="game-menu-title" className="text-3xl font-bold mb-4 text-gray-800">{titulo}</h1>
       <p className="text-gray-600 mb-8 font-medium">{subtitulo}</p>
       
       {/* Aqui entram as opções (se o jogo não tiver, deixar em branco ou fechar direto a tag) */}
@@ -58,11 +62,14 @@ export default function MenuGame({
         type="button" 
         onClick={onIniciar}
         disabled={!podeIniciar}
+        aria-label={podeIniciar ? `Iniciar jogo ${titulo}` : "Aguarde, carregando o jogo"}
         className={`w-full font-bold py-4 px-8 rounded-xl text-lg transition-transform hover:scale-105 active:scale-95 cursor-pointer shadow-lg flex items-center justify-center gap-2 
           ${podeIniciar ? `${corBtn} text-white` : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
       >
-        {podeIniciar ? textoBotao : 'Carregando...'}
+        <span aria-live="polite">
+          {podeIniciar ? textoBotao : 'Carregando...'}
+        </span>
       </button>
-    </div>
+    </section>
   );
 }

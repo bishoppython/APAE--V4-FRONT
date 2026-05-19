@@ -3,6 +3,7 @@ import confetti from "canvas-confetti";
 import { OverlayResultado } from "@/components/OverlayResultado";
 import MenuGame from "@/components/MenuGame";
 import HeaderGame from "@/components/HeaderGame";
+import { PageContainer } from "@/components/ui/page_components";
 
 interface Carta {
     id: number;
@@ -142,8 +143,33 @@ export default function Memoria() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center p-6 min-h-screen bg-gray-100 font-poppins">
+        <div className="min-h-screen bg-white font-poppins relative pb-24">
+
+            <style>
+        {`
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+          }
+          .animate-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+          }
+          @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+          }
+          .animate-pop-in {
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+          }
+        `}
+      </style>
+
+        <PageContainer className="w-full max-w-6xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-8">
+            
             {gameState === 'menu' && (
+                <div className="w-full max-w-full flex justify-center items-center overflow-x-hidden box-border px-1">
                 <MenuGame
                 titulo="Jogo da Memória"
                 subtitulo="Escolha o tema e encontre todos os pares de cartas!"
@@ -151,41 +177,49 @@ export default function Memoria() {
                 corDestaque="pink"
                 icones={
                 <>
-                    <span className="text-5xl">🐶</span>
-                    <span className="text-5xl">❓</span>
-                    <span className="text-5xl">🍎</span>
+                    <span className="text-3xl md:text-4xl select-none shrink">🐶</span>
+                    <span className="text-3xl md:text-4xl select-none shrink">❓</span>
+                    <span className="text-3xl md:text-4xl select-none shrink">🍎</span>
                 </>
                 }
             >
-                <div className="grid grid-cols-2 gap-4">
-                {(["aleatorio", "animais", "cores", "comidas"] as const).map(cat => (
-                    <label 
-                    key={cat} 
-                    onClick={() => setCategoriaSelecionada(cat)} // Use onClick na label para evitar o travamento
-                    className={`flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all select-none ${
-                        categoriaSelecionada === cat 
-                        ? 'border-pink-500 bg-pink-50 transform scale-105 shadow-md' 
-                        : 'border-gray-200 hover:bg-gray-50 active:scale-95'
-                    }`}
+                <div 
+                 role="radiogroup" 
+                 aria-label="Escolha uma categoria de jogo"
+                 className="grid grid-cols-2 gap-4 w-full max-w-full box-border px-1"
                     >
-                    <input
-                        type="radio"
-                        className="hidden"
-                        checked={categoriaSelecionada === cat}
-                        readOnly
-                    />
-                    <span className={`font-bold text-lg capitalize pointer-events-none ${
-                        categoriaSelecionada === cat ? 'text-pink-700' : 'text-gray-600'
-                    }`}>
-                        {cat === "aleatorio" ? "Misturado" : cat}
-                    </span>
-                    </label>
-                ))}
-                </div>
-            </MenuGame>
-                        )}
+                    {(["aleatorio", "animais", "cores", "comidas"] as const).map(cat => {
+                        const estaAtivo = categoriaSelecionada === cat;
 
-                <>
+                        return (
+                        <label 
+                            key={cat} 
+                            className={`flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all select-none focus-within:ring-2 focus-within:ring-black-400 focus-within:ring-offset-1 ${
+                            estaAtivo 
+                                ? 'border-pink-500 bg-pink-50 font-bold shadow-sm' 
+                                : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                            }`}
+                        >
+                            <input
+                            type="radio"
+                            name="categoria-jogo"
+                            value={cat}
+                            checked={estaAtivo}
+                            onChange={() => setCategoriaSelecionada(cat)}
+                            className="sr-only"
+                            />
+                            <span className="text-base md:text-lg capitalize pointer-events-none">
+                            {cat === "aleatorio" ? "Misturado" : cat}
+                            </span>
+                        </label>
+                        );
+                    })}
+                    </div>
+                </MenuGame>
+              </div>          
+            )}
+
+                
                     {gameState === 'playing' && (
                         <>
                             {/* Header */}
@@ -194,41 +228,64 @@ export default function Memoria() {
                             onDesistir={handleGiveUp}
                             >
                             {/* Children */}
-                            <span className="text-gray-600 font-medium">Pontuação: <span className="text-blue-600 font-bold">{pontos}</span></span>
+                            <div
+                                aria-live="polite" 
+                                aria-atomic="true" 
+                                className="text-gray-600 font-medium"
+                                >
+                                <span>Pontuação:{" "}</span>
+                                <span className="text-red-500 font-bold">
+                                    {pontos}
+                                </span>
+                            </div>
                             </HeaderGame>
                             
-                            <div className="w-full max-w-7xl mt-6 grid grid-cols-4 sm:grid-cols-6 gap-3 sm:gap-6 md:gap-8 justify-center px-2 md:px-0" style={{ perspective: "1000px" }}>
-                                {cartas.map((carta, index) => (
-                                    <div
-                                        key={carta.id}
-                                        onClick={() => handleCardClick(index)}
-                                        className="relative w-full aspect-square cursor-pointer"
-                                        style={{
-                                            transformStyle: 'preserve-3d',
-                                            transition: 'transform 0.5s',
-                                            transform: (carta.virada || carta.encontrada) ? 'rotateY(180deg)' : 'rotateY(0deg)'
-                                        }}
+                            <div 
+                                role="grid" 
+                                aria-label="Tabuleiro do Jogo da Memória"
+                                className="w-full max-w-7xl mt-6 grid grid-cols-4 sm:grid-cols-6 gap-3 sm:gap-6 md:gap-8 justify-center px-2 md:px-0" 
+                                style={{ perspective: "1000px" }}
+                            >
+                            {cartas.map((carta, index) => {
+                                const estaRevelada = carta.virada || carta.encontrada;
+                                const numeroCarta = index + 1;
+
+                                return (
+                                <button
+                                    key={carta.id}
+                                    onClick={() => handleCardClick(index)}
+                                    disabled={carta.encontrada}
+                                    role="gridcell"
+                                    aria-label={`Carta ${numeroCarta}: ${carta.encontrada ? `Encontrada, par de ${carta.emoji}` : estaRevelada ? `Revelada, ${carta.emoji}` : 'Virada para baixo'}`}
+                                    aria-live="polite"
+                                    className="relative w-full aspect-square cursor-pointer bg-transparent border-0 p-0 outline-none rounded-xl focus:ring-4 focus:ring-indigo-500 focus:ring-offset-2 transition-shadow"
+                                    style={{
+                                    transformStyle: 'preserve-3d',
+                                    transition: 'transform 0.5s',
+                                    transform: estaRevelada ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                                    }}
+                                >
+                                    <div 
+                                    className="absolute inset-0 bg-indigo-500 rounded-xl shadow-lg border-4 border-indigo-300 flex items-center justify-center text-6xl sm:text-7xl md:text-8xl font-bold text-white transition-transform"
+                                    style={{ backfaceVisibility: 'hidden' }}
+                                    aria-hidden="true"
                                     >
-                                        {/* Costas da Carta (Logo APAE ou interrogação) */}
-                                        <div 
-                                            className="absolute inset-0 bg-indigo-500 rounded-xl shadow-lg border-4 border-indigo-300 flex items-center justify-center text-6xl sm:text-7xl md:text-8xl font-bold text-white hover:scale-105 transition-transform"
-                                            style={{ backfaceVisibility: 'hidden' }}
-                                        >
-                                            ?
-                                        </div>
-                                        
-                                        {/* Frente da Carta (Emoji correspondente) */}
-                                        <div 
-                                            className={`absolute inset-0 rounded-xl shadow-lg border-4 border-indigo-200 flex items-center justify-center text-6xl sm:text-7xl md:text-[6rem] bg-white ${carta.encontrada ? 'opacity-60 saturate-50' : ''}`}
-                                            style={{ 
-                                                backfaceVisibility: 'hidden',
-                                                transform: 'rotateY(180deg)' 
-                                            }}
-                                        >
-                                            {carta.emoji}
-                                        </div>
+                                    ?
                                     </div>
-                                ))}
+                                    
+                                    <div 
+                                    className={`absolute inset-0 rounded-xl shadow-lg border-4 border-indigo-200 flex items-center justify-center text-6xl sm:text-7xl md:text-[6rem] bg-white ${carta.encontrada ? 'opacity-60 saturate-50' : ''}`}
+                                    style={{ 
+                                        backfaceVisibility: 'hidden',
+                                        transform: 'rotateY(180deg)' 
+                                    }}
+                                    aria-hidden={!estaRevelada}
+                                    >
+                                    {carta.emoji}
+                                    </div>
+                                </button>
+                                );
+                            })}
                             </div>
                         </>
                     )}
@@ -264,6 +321,6 @@ export default function Memoria() {
                             }
                         />
                     )}
-                </>
+        </PageContainer>
         </div>
     )}

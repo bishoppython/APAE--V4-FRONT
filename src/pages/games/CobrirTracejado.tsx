@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
 import { Link } from "react-router-dom";
 import { Trophy, RotateCcw } from "lucide-react";
+import { PageContainer } from "@/components/ui/page_components";
+import MenuGame from "@/components/MenuGame";
+import HeaderGame from "@/components/HeaderGame";
+import { OverlayResultado } from "@/components/OverlayResultado";
 
 // Funções de desenho
 function desenharLetraA(ctx: CanvasRenderingContext2D) {
@@ -146,15 +150,15 @@ const efeitoVitoria = new URL(
 ).href;
 
 export default function CobrirTracejado() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);  
 
-  const [started, setStarted] = useState(false);
   const [nivelAtual, setNivelAtual] = useState(0);
   const [tentativas, setTentativas] = useState(3);
   const [mensagem, setMensagem] = useState("");
-  const [jogoFinalizado, setJogoFinalizado] = useState(false);
-  const [desistiu, setDesistiu] = useState(false);
-
+  const [gameState, setGameState] = useState<
+    "menu" | "playing" | "won" | "lost" | "gaveUp"
+  >("menu");
+  
   // Controle de desenho
   const [desenhando, setDesenhando] = useState(false);
   const comprimentoTracadoRef = useRef(0);
@@ -168,13 +172,19 @@ export default function CobrirTracejado() {
   };
 
   const iniciarJogo = () => {
-    setStarted(true);
-    setJogoFinalizado(false);
-    setDesistiu(false);
+    setGameState('playing');
     setNivelAtual(0);
     setTentativas(3);
     setMensagem("");
     setTimeout(desenharBase, 100); // Aguarda o canvas renderizar
+  };
+
+  const backToMenu = () => {
+    setGameState("menu");
+  };
+
+  const handleGiveUp = () => {
+    setGameState("gaveUp");
   };
 
   const desenharBase = () => {
@@ -227,10 +237,10 @@ export default function CobrirTracejado() {
   };
 
   useEffect(() => {
-    if (started && !jogoFinalizado && !desistiu) {
+    if (gameState === 'playing') {
       desenharBase();
     }
-  }, [nivelAtual, started, jogoFinalizado, desistiu]);
+  }, [nivelAtual, gameState]);
 
   const obterCoordenadas = (e: React.MouseEvent | React.TouchEvent, canvas: HTMLCanvasElement) => {
     const rect = canvas.getBoundingClientRect();
@@ -322,9 +332,8 @@ export default function CobrirTracejado() {
       setTentativas(3);
       setMensagem("");
     } else {
-      setJogoFinalizado(true);
-      tocarAudio(efeitoVitoria);
-      confetti({ particleCount: 300, spread: 120, origin: { y: 0.6 } });
+      setGameState('won');
+      tocarAudio("/audio/efeito-vitória.mp3");
     }
   };
 
@@ -375,47 +384,87 @@ export default function CobrirTracejado() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-poppins relative pb-24">
-      {!started && (
-        <div className="flex flex-col items-center justify-center p-6 min-h-screen">
-          <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md w-full mx-4 border-t-8 border-orange-500 animate-pop-in">
-            <h1 className="text-3xl font-bold mb-4 text-gray-800">Cobrindo Formas</h1>
-            <p className="text-gray-600 mb-8 font-medium">Cubra os tracejados na tela para praticar sua coordenação motora!</p>
-            <button
-              onClick={iniciarJogo}
-              className="w-full font-bold py-4 px-8 rounded-xl text-lg transition-transform hover:scale-105 active:scale-95 cursor-pointer shadow-lg flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white"
-            >
-              Jogar Agora
-            </button>
-          </div>
-        </div>
+  <div className="min-h-screen bg-white font-poppins relative pb-24" aria-live="polite">
+
+    <style>
+        {`
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+          }
+          .animate-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+          }
+          @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+          }
+          .animate-pop-in {
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+          }
+        `}
+      </style>
+      
+  <PageContainer className="w-full max-w-6xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-8">
+    
+      
+      {gameState === 'menu' && (
+          <MenuGame
+            titulo="Cobrindo Formas"
+            subtitulo="Cubra os tracejados na tela para praticar sua coordenação motora!"
+            onIniciar={iniciarJogo}
+            corDestaque="orange"
+            icones={
+              <>
+                <div className="flex items-center justify-center gap-3 md:gap-6 max-w-full overflow-hidden">
+                  <span className="text-3xl md:text-4xl select-none shrink">✏️</span>
+                  <span className="text-3xl md:text-4xl select-none shrink">〰️</span>
+                  <span className="text-3xl md:text-4xl select-none shrink">🖌️</span>
+                </div>
+              </>
+            }
+          />
       )}
 
-      {started && !jogoFinalizado && !desistiu && (
-        <main className="w-full max-w-5xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-24">
+      {gameState === 'playing' && (
+        <section aria-label="Área de jogo ativa" className="w-full flex flex-col items-center">
+          
           {/* Header */}
           <div className="mb-4 flex flex-col md:flex-row justify-between w-full max-w-2xl items-center pb-2 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-700 mb-2 md:mb-0">Cubra o Tracejado</h1>
-            <div className="flex items-center gap-4">
-              <span className="text-gray-600 font-medium">
-                Tentativas: <span className="text-blue-600 font-bold mr-4">{tentativas} / 3</span>
-                Progresso: <span className="text-blue-600 font-bold">{nivelAtual + 1} / {totalNiveis}</span>
-              </span>
-              <button
-                onClick={() => {
-                  tocarAudio(efeitoDerrota);
-                  setDesistiu(true);
-                }}
-                className="px-5 py-2 bg-red-100 hover:bg-red-200 rounded-lg cursor-pointer text-sm font-bold text-red-700 transition shadow-sm"
+            <HeaderGame
+              titulo="Cubra o Tracejado"
+              onDesistir={handleGiveUp}
+            >
+              {/* Aria-live anuncia dinamicamente o progresso e erros */}
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-gray-600 font-medium">
+              
+              <div 
+                aria-live="polite" 
+                aria-atomic="true"
+                className="mr-4"
               >
-                Desistir
-              </button>
-            </div>
+                <span>Tentativas: </span>
+                <span className="text-blue-600 font-bold">{tentativas} de 3</span>
+              </div>
+
+              
+              <div 
+                aria-live="polite" 
+                aria-atomic="true"
+              >
+                <span>Progresso: </span>
+                <span className="text-blue-600 font-bold">{nivelAtual + 1} de {totalNiveis}</span>
+              </div>
+              </div>
+            </HeaderGame>
           </div>
 
           {/* Content */}
           <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-4 md:p-8 mb-8 mt-2 md:mt-4 relative flex flex-col items-center">
-            <div className="h-10 mb-4 text-center">
+            
+            <div className="h-10 mb-4 text-center" role="status" aria-live="assertive">
               {mensagem && (
                 <p className={`text-xl font-bold ${mensagem.includes('Parabéns') ? 'text-green-500 animate-bounce' : 'text-orange-500'}`}>
                   {mensagem}
@@ -428,6 +477,9 @@ export default function CobrirTracejado() {
                 ref={canvasRef}
                 width={400}
                 height={400}
+                role="img"
+                aria-label={`Quadro de desenho interativo. Nível ${nivelAtual + 1}. Use o mouse para cobrir o traçado da forma.`}
+                tabIndex={0}
                 className="cursor-crosshair w-full max-w-[400px] h-auto aspect-square"
                 onMouseDown={iniciarTraco}
                 onMouseMove={desenhar}
@@ -442,78 +494,93 @@ export default function CobrirTracejado() {
 
             <div className="flex gap-4 w-full justify-center">
               <button
+                type="button"
                 onClick={desenharBase}
+                aria-label="Limpar desenho atual e recomeçar esta forma"
                 className="flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-xl shadow-md cursor-pointer transition-transform hover:scale-105 active:scale-95 flex-1 max-w-[180px]"
               >
-                <RotateCcw size={20} />
+                <RotateCcw size={20} aria-hidden="true" />
                 Limpar
               </button>
+              
               <button
+                type="button"
                 onClick={finalizarDesenho}
+                aria-label="Finalizar e avaliar precisão do traçado"
                 className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl shadow-md cursor-pointer transition-transform hover:scale-105 active:scale-95 flex-1 max-w-[180px]"
               >
                 Finalizar
               </button>
             </div>
           </div>
-        </main>
+        </section>
       )}
 
-      {(desistiu || jogoFinalizado) && (
-        <div className="flex flex-col items-center justify-center p-6 min-h-[80vh]">
-          {desistiu && (
-            <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-orange-500 animate-pop-in">
-              <div className="mx-auto w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mb-6">
-                <span className="text-orange-500 text-5xl font-bold">!</span>
-              </div>
-              <h2 className="text-4xl font-extrabold text-orange-600 mb-4">Você Desistiu!</h2>
-              <p className="text-xl text-gray-700 mb-2">
-                Você completou <span className="font-bold text-2xl text-orange-600">{nivelAtual}</span> formas.
-              </p>
-              <div className="flex flex-col gap-3 w-full mt-8">
-                <button
-                  onClick={iniciarJogo}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
-                >
-                  Jogar Novamente
-                </button>
-                <Link
-                  to="/"
-                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg block"
-                >
-                  Voltar para o Menu
-                </Link>
-              </div>
-            </div>
-          )}
+      
+        {gameState === "gaveUp" && (
+          <OverlayResultado
+            tipo="desistencia"
+            titulo="Você desistiu!"
+            subtitulo={
+              <>
+                <p className="text-xl text-gray-700 mb-2">
+                  Você completou <span className="font-bold text-2xl text-orange-600">{nivelAtual}</span> formas.
+                </p>
+              </>
+            }
+            onReiniciar={backToMenu}
+            icon={
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-10 w-10 text-red-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+            }
+          />
+        )}
 
-          {jogoFinalizado && (
-            <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-green-500 animate-pop-in">
-              <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                <Trophy size={40} className="text-green-500" />
-              </div>
-              <h2 className="text-4xl font-extrabold text-green-600 mb-4">Você Venceu!</h2>
-              <p className="text-xl text-gray-700 mb-8">
-                Parabéns! Você cobriu todas as formas com sucesso!
-              </p>
-              <div className="flex flex-col gap-3 w-full">
-                <button
-                  onClick={iniciarJogo}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
-                >
-                  Jogar Novamente
-                </button>
-                <Link
-                  to="/"
-                  className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 cursor-pointer font-bold py-4 px-4 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg block"
-                >
-                  Voltar para o Menu
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
+        {gameState === 'won' && (
+          <OverlayResultado
+            tipo="vitoria"
+            titulo="Você Venceu!"
+            subtitulo={
+              <>
+                <p className="text-xl text-gray-700 mb-2">
+                  Parabéns! Você cobriu todas as formas com sucesso!
+                </p>
+              </>
+            }
+            onReiniciar={backToMenu}
+            icon={
+              <svg
+                xmlns="http://www.w3.org/2000/xl"
+                className="h-10 w-10 text-green-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            }
+          />
+        )}
+      
+    
+  </PageContainer>
+  </div>
+);
 }

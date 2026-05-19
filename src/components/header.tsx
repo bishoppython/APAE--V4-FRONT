@@ -101,77 +101,95 @@ const Header: React.FC<HeaderProps> = ({ userName = "Fulano da Silva" }) => {
     }
   }, [location.pathname, location.hash]);
 
-  return (
-    <header className="fixed mb-20 inset-x-0 top-0 z-40 flex flex-col md:flex-row items-center gap-3 md:gap-0 justify-between px-4 sm:px-10 py-2 bg-white/80 backdrop-blur-sm shadow-sm font-sans">
-      <Link to="/" className="flex items-center gap-2 flex-none cursor-pointer hover:scale-105 transition-transform duration-500">
-        <img src="icon.svg" alt="Logo" className="size-12" />
-        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-          NeuroKids
-        </h1>
-      </Link>
+return (
+  <header role="banner" className="fixed inset-x-0 top-0 z-40 flex flex-col md:flex-row items-center justify-between px-4 sm:px-10 py-3 bg-white/80 backdrop-blur-sm shadow-sm font-sans w-full box-border">
+    
+    {/* Logo do App */}
+    <Link to="/" className="flex items-center gap-2 flex-none cursor-pointer hover:scale-105 transition-transform duration-500">
+      <img src="icon.svg" alt="NeuroKids Logo" className="size-10 md:size-12" />
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
+        NeuroKids
+      </h1>
+    </Link>
 
-      <div className="flex items-center gap-6 md:gap-12">
-        <nav>
-          <ul className="flex items-center gap-4 md:gap-8">
-            {menuItems.map((item) => {
-              const dropdownItems =
-                item.name === "Jogos"
-                  ? gamesMenu
-                  : item.name === "Conversação"
-                    ? conversationMenu
-                    : null;
+    {/* Menu e Perfil agrupados de forma responsiva */}
+    <div className="flex items-center justify-center md:justify-end w-full md:w-auto max-w-full box-border mt-2 md:mt-0">
+      <nav aria-label="Menu Principal" className="w-full md:w-auto max-w-full">
+        <ul className="flex items-center justify-center md:justify-start gap-3 sm:gap-4 md:gap-8 m-0 p-0 list-none w-full">
+          {menuItems.map((item) => {
+            const dropdownItems =
+              item.name === "Jogos"
+                ? gamesMenu
+                : item.name === "Conversação"
+                  ? conversationMenu
+                  : null;
 
-              if (dropdownItems) {
-                return (
-                  <div key={item.name} className="relative group">
-                    <Link
-                      to={item.href}
-                      onClick={() => setActiveItem(item.name)}
-                      className={cn(
-                        "cursor-pointer text-base transition-colors hover:text-gray-900",
-                        activeItem === item.name
-                          ? "text-gray-950 font-bold border-b-2 border-gray-950"
-                          : "text-gray-600 font-medium",
-                      )}
-                    >
-                      {item.name}
-                    </Link>
+            if (dropdownItems) {
+              const dropdownId = `dropdown-${item.name.toLowerCase()}`;
+              const estaAtivo = activeItem === item.name;
 
-                    <div className="absolute left-1/2 top-full z-50 w-[420px] -translate-x-1/2 pt-3 opacity-0 invisible pointer-events-none transition-all duration-200 transform scale-95 -translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto group-hover:scale-100 group-hover:translate-y-0">
-                      <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-xl">
-                        <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
-                          {item.name}
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          {dropdownItems.map((entry) => (
-                            <Link
-                              key={entry.name}
-                              to={entry.href}
-                              onClick={() => setActiveItem(item.name)}
-                              className="rounded-lg p-2 transition-colors hover:bg-gray-50"
-                            >
-                              <div className="text-sm font-semibold text-gray-800">
-                                {entry.name}
-                              </div>
-                              <div className="text-xs text-gray-500">
-                                {entry.description}
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
+              return (
+                <li key={item.name} className="relative group">
+                  <button
+                    type="button"
+                    aria-expanded={estaAtivo} 
+                    aria-controls={dropdownId}
+                    aria-haspopup="true"
+                    onClick={() => setActiveItem(estaAtivo ? "" : item.name)}
+                    className={cn(
+                      "cursor-pointer text-sm md:text-base transition-colors hover:text-gray-900 flex items-center gap-1 focus:outline-none py-1",
+                      estaAtivo ? "text-gray-950 font-bold border-b-2 border-gray-950" : "text-gray-600 font-medium"
+                    )}
+                  >
+                    {item.name}
+                    <span className="text-[9px] opacity-70" aria-hidden="true">▼</span>
+                  </button>
+
+                  {/* CORREÇÃO DO DROPDOWN: 
+                      Trocamos w-[420px] por w-[90vw] no mobile, subindo para md:w-[420px] no PC.
+                      Trocamos left-1/2 por escoramento inteligente para evitar o estouro lateral */}
+                  <div
+                    id={dropdownId}
+                    className="absolute -left-10 sm:left-1/2 top-full z-50 w-[88vw] sm:w-[380px] md:w-[420px] sm:-translate-x-1/2 pt-3 opacity-0 invisible pointer-events-none transition-all duration-200 transform scale-95 -translate-y-2 
+                      group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto group-hover:scale-100 group-hover:translate-y-0
+                      group-focus-within:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:scale-100 group-focus-within:translate-y-0"
+                  >
+                    <div className="rounded-2xl border border-gray-200 bg-white p-3 md:p-4 shadow-xl">
+                      <div className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                        {item.name}
+                      </div>
+                      
+                      {/* Grid responsiva dentro do dropdown: 1 coluna no celular, 2 no PC */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
+                        {dropdownItems.map((entry) => (
+                          <Link
+                            key={entry.name}
+                            to={entry.href}
+                            onClick={() => setActiveItem("")}
+                            className="rounded-lg p-2 transition-colors hover:bg-gray-50 block"
+                          >
+                            <div className="text-xs md:text-sm font-semibold text-gray-800">
+                              {entry.name}
+                            </div>
+                            <div className="text-[11px] text-gray-500 leading-tight hidden sm:block">
+                              {entry.description}
+                            </div>
+                          </Link>
+                        ))}
                       </div>
                     </div>
                   </div>
-                );
-              }
+                </li>
+              );
+            }
 
-              return (
+            return (
+              <li key={item.name}>
                 <Link
-                  key={item.name}
                   to={item.href}
                   onClick={() => setActiveItem(item.name)}
                   className={cn(
-                    "cursor-pointer text-base transition-colors hover:text-gray-900",
+                    "cursor-pointer text-sm md:text-base transition-colors hover:text-gray-900 py-1",
                     activeItem === item.name
                       ? "text-gray-950 font-bold border-b-2 border-gray-950"
                       : "text-gray-600 font-medium",
@@ -179,20 +197,26 @@ const Header: React.FC<HeaderProps> = ({ userName = "Fulano da Silva" }) => {
                 >
                   {item.name}
                 </Link>
-              );
-            })}
-          </ul>
-        </nav>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
 
-        <div className="hidden sm:flex items-center gap-3">
-          <span className="text-sm font-medium text-gray-700">{userName}</span>
-          <div className="p-1.5 bg-gray-100 rounded-full text-gray-500">
-            <User className="w-5 h-5" strokeWidth={1.5} />
-          </div>
+      {/* Área do Perfil */}
+      <div 
+        role="group" 
+        aria-label="Perfil do usuário"
+        className="hidden sm:flex items-center gap-2 md:gap-3 flex-none"
+      >
+        <span className="text-xs md:text-sm font-medium text-gray-700">{userName}</span>
+        <div className="p-1.5 bg-gray-100 rounded-full text-gray-500" aria-hidden="true">
+          <User className="w-4 h-4 md:w-5 md:h-5" strokeWidth={1.5} />
         </div>
       </div>
-    </header>
-  );
+    </div>
+  </header>
+);
 };
 
 export default Header;

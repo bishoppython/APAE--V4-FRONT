@@ -2,6 +2,12 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Trophy } from "lucide-react";
 import confetti from "canvas-confetti";
+import { useMemo } from 'react';
+import { PageContainer } from "@/components/ui/page_components";
+import { OverlayResultado } from "@/components/OverlayResultado";
+import MenuGame from "@/components/MenuGame";
+import InstructionsGame from "@/components/InstructionsGame";
+import HeaderGame from "@/components/HeaderGame";
 
 const efeitoAcerto = new URL(
   "../../assets/sounds/efeitos/efeito-acerto.mp3",
@@ -98,22 +104,35 @@ function gerarPecas(): Peca[] {
   return pecas;
 }
 
-const SvgPiece = ({ peca, animalId, isBoard }: { peca: Peca; animalId: string, isBoard?: boolean }) => {
-  return (
-    <svg 
-      style={isBoard ? {
-        position: 'absolute',
-        left: `${( (peca.xMin - peca.c*100) / 100 ) * 100}%`,
-        top: `${( (peca.yMin - peca.r*100) / 100 ) * 100}%`,
-        width: `${(peca.boxWidth / 100) * 100}%`,
-        height: `${(peca.boxHeight / 100) * 100}%`,
+interface SvgPieceProps {
+  peca: Peca;
+  animalId: string;
+  isBoard?: boolean;
+}
+const SvgPiece = ({ peca, animalId, isBoard }: SvgPieceProps) => {
+  // Otimização: memoriza o estilo para evitar recálculos desnecessários a cada render
+  const estiloSvg = useMemo(() => {
+    if (isBoard) {
+      return {
+        position: 'absolute' as const,
+        left: `${(peca.xMin - peca.c * 100)}%`, // Simplificado o cálculo matemático anterior
+        top: `${(peca.yMin - peca.r * 100)}%`,  // Simplificado o cálculo matemático anterior
+        width: `${peca.boxWidth}%`,
+        height: `${peca.boxHeight}%`,
         filter: "drop-shadow(2px 2px 3px rgba(0,0,0,0.4))",
         zIndex: 10
-      } : {
-        width: '100%',
-        height: '100%',
-        filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.5))"
-      }}
+      };
+    }
+    return {
+      width: '100%',
+      height: '100%',
+      filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.5))"
+    };
+  }, [isBoard, peca]);
+
+  return (
+    <svg 
+      style={estiloSvg}
       viewBox={`${peca.xMin} ${peca.yMin} ${peca.boxWidth} ${peca.boxHeight}`}
       className="pointer-events-none" 
     >
@@ -135,15 +154,15 @@ const SvgPiece = ({ peca, animalId, isBoard }: { peca: Peca; animalId: string, i
 
 export default function QuebraCabeca() {
   const [animalSelecionado, setAnimalSelecionado] = useState<string | null>(null);
-  const [started, setStarted] = useState(false);
+  const [gameState, setGameState] = useState<
+    "menu" | "playing" | "won" | "lost" | "gaveUp"
+  >("menu");
   
   const [tabuleiro, setTabuleiro] = useState<(Peca | null)[]>(Array(25).fill(null));
   const [pecasDisponiveis, setPecasDisponiveis] = useState<Peca[]>([]);
   const [pecaSelecionada, setPecaSelecionada] = useState<Peca | null>(null);
   
   const [tentativas, setTentativas] = useState(0);
-  const [jogoFinalizado, setJogoFinalizado] = useState(false);
-  const [desistiu, setDesistiu] = useState(false);
 
   const tocarAudio = (caminho: string) => {
     const audio = new Audio(caminho);
@@ -152,15 +171,25 @@ export default function QuebraCabeca() {
 
   const iniciarJogo = (animalId: string) => {
     setAnimalSelecionado(animalId);
-    setStarted(true);
-    setJogoFinalizado(false);
-    setDesistiu(false);
+    setGameState('playing');
     setTentativas(0);
     setTabuleiro(Array(25).fill(null));
     setPecaSelecionada(null);
 
     const pecasGeradas = gerarPecas();
     setPecasDisponiveis(pecasGeradas.sort(() => Math.random() - 0.5));
+  };
+
+  const backToMenu = () => {
+    setGameState("menu");
+  };
+
+  const handleGiveUp = () => {
+    setGameState("gaveUp");
+  };
+
+  const backToHome = () => {
+    
   };
 
   const verificarVitoria = (novoTabuleiro: (Peca | null)[]) => {
@@ -172,7 +201,7 @@ export default function QuebraCabeca() {
   };
 
   const handlePecaClick = (peca: Peca) => {
-    if (jogoFinalizado) return;
+    if (gameState === 'won') return;
     if (pecaSelecionada?.id === peca.id) {
       setPecaSelecionada(null);
     } else {
@@ -181,7 +210,7 @@ export default function QuebraCabeca() {
   };
 
   const handleTabuleiroClick = (index: number) => {
-    if (jogoFinalizado) return;
+    if (gameState === 'won') return;
 
     if (pecaSelecionada) {
       setTentativas(t => t + 1);
@@ -207,8 +236,8 @@ export default function QuebraCabeca() {
       setPecaSelecionada(null);
 
       if (verificarVitoria(novoTabuleiro)) {
-        setJogoFinalizado(true);
-        tocarAudio(efeitoVitoria);
+        setGameState('won');
+        tocarAudio("/audio/efeito-vitória.mp3");
         confetti({ particleCount: 300, spread: 120, origin: { y: 0.6 } });
       } else if (colocouCerto) {
         tocarAudio(efeitoAcerto);
@@ -234,7 +263,7 @@ export default function QuebraCabeca() {
 
   const handleDropBoard = (e: React.DragEvent, index: number) => {
     e.preventDefault();
-    if (jogoFinalizado) return;
+    if (gameState === 'won') return;
 
     try {
       const data = JSON.parse(e.dataTransfer.getData("text/plain"));
@@ -260,8 +289,8 @@ export default function QuebraCabeca() {
       setPecaSelecionada(null);
 
       if (verificarVitoria(novoTabuleiro)) {
-        setJogoFinalizado(true);
-        tocarAudio(efeitoVitoria);
+        setGameState('won');
+        tocarAudio("/audio/efeito-vitória.mp3");
         confetti({ particleCount: 300, spread: 120, origin: { y: 0.6 } });
       } else if (colocouCerto) {
         tocarAudio(efeitoAcerto);
@@ -276,149 +305,280 @@ export default function QuebraCabeca() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-poppins relative pb-24">
-      {!started && (
-        <div className="flex flex-col items-center justify-center p-6 min-h-screen">
-          <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-4xl w-full border-t-8 border-orange-500 animate-pop-in">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800">Quebra Cabeça</h1>
-            <p className="text-gray-600 mb-8 font-medium text-lg">Escolha uma imagem para montar!</p>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              {animaisData.map(animal => (
-                <button
-                  key={animal.id}
-                  onClick={() => iniciarJogo(animal.id)}
-                  className="flex flex-col items-center gap-2 p-3 bg-gray-100 rounded-xl hover:bg-orange-100 hover:scale-105 transition-all shadow-sm border-2 border-transparent hover:border-orange-400 cursor-pointer"
-                >
-                  <img 
-                    src={getFullImageUrl(animal.id)} 
-                    alt={animal.nome} 
-                    className="w-full aspect-square object-cover rounded-lg shadow-sm"
-                  />
-                  <span className="font-bold text-gray-700">{animal.nome}</span>
-                </button>
-              ))}
-            </div>
-            
-            <Link to="/" className="mt-8 inline-block px-8 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold rounded-xl transition cursor-pointer">
-              Voltar ao Menu
-            </Link>
+    <div className="min-h-screen bg-white font-poppins relative pb-24">
+
+      <style>
+        {`
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+          }
+          .animate-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+          }
+          @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+          }
+          .animate-pop-in {
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+          }
+        `}
+      </style>
+      
+    <PageContainer className="w-full max-w-6xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-8">
+      {gameState === 'menu' && (
+        <MenuGame
+          titulo="Quebra Cabeça"
+          subtitulo="Escolha uma imagem para montar"
+          corDestaque="orange"
+          onIniciar={backToHome}
+          textoBotao="Voltar ao Menu"
+          icones={
+            <>
+              <div className="flex items-center justify-center gap-3 md:gap-6 max-w-full overflow-hidden">
+                <span className="text-3xl md:text-4xl select-none shrink"></span>
+                <span className="text-3xl md:text-4xl select-none shrink"></span>
+                <span className="text-3xl md:text-4xl select-none shrink"></span>
+              </div>
+            </>
+          }
+        >
+          <div 
+            role="group" 
+            aria-label="Selecione um animal para iniciar o jogo"
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 w-full max-w-full box-border px-1"
+          >
+            {animaisData.map(animal => (
+              <button
+                key={animal.id}
+                onClick={() => iniciarJogo(animal.id)}
+                lang="pt-BR"
+                aria-label={`Montar um ${animal.nome}`}
+                className="flex flex-col items-center gap-2 p-3 bg-gray-100 rounded-xl border-2 border-transparent hover:bg-blue-100 hover:border-blue-400 cursor-pointer outline-none focus:ring-4 focus:ring-blue-500 focus:ring-offset-2 transition-all shadow-sm"
+              >
+                <img 
+                  src={getFullImageUrl(animal.id)} 
+                  alt="" 
+                  aria-hidden="true"
+                  className="w-full aspect-square object-cover rounded-lg shadow-sm"
+                />
+                <span className="font-bold text-gray-700 pointer-events-none" aria-hidden="true">
+                  {animal.nome}
+                </span>
+              </button>
+            ))}
           </div>
-        </div>
+        </MenuGame>
       )}
 
-      {started && !jogoFinalizado && !desistiu && animalSelecionado && (
-        <main className="w-full max-w-6xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-8">
-          <div className="mb-4 flex flex-col md:flex-row justify-between w-full items-center pb-2 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-700 mb-2 md:mb-0">
-              Montando: {animaisData.find(a => a.id === animalSelecionado)?.nome}
-            </h1>
+      {gameState === 'playing' && (
+        <>
+          <HeaderGame
+            titulo={
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 text-center w-full max-w-full">
+                <span className="font-medium text-base sm:text-lg">
+                  Montando:
+                </span>
+                <span className="text-blue-500 capitalize truncate font-bold sm:text-lg">
+                  {animaisData.find(a => a.id === animalSelecionado)?.nome || "Animal"}
+                </span>
+              </div>
+            }
+            onDesistir={handleGiveUp}
+          >
+            {/* Children */}
             <div className="flex items-center gap-4">
-              <span className="text-gray-600 font-medium">Movimentos: <span className="text-blue-600 font-bold">{tentativas}</span></span>
-              <button onClick={() => setDesistiu(true)} className="px-5 py-2 bg-red-100 hover:bg-red-200 rounded-lg cursor-pointer text-sm font-bold text-red-700 transition shadow-sm">
-                Desistir
-              </button>
+              <span className="text-gray-600 font-medium">
+                Movimentos: <span className="text-blue-600 font-bold">{tentativas}</span>
+              </span>
             </div>
-          </div>
+          </HeaderGame>
 
           <div className="flex flex-col md:flex-row gap-8 w-full mt-4 items-start justify-center">
-            
-            {/* Tabuleiro */}
-            <div className="flex flex-col items-center bg-white p-4 md:p-6 rounded-2xl shadow-2xl flex-1 max-w-md w-full">
-              <div 
-                className="grid grid-cols-5 bg-white rounded-xl relative isolate overflow-hidden"
-                style={{ width: "100%", aspectRatio: "1/1", border: "4px solid #d1d5db" }}
-              >
-                {/* Background visual grid to guide the user */}
-                <div className="absolute inset-0 grid grid-cols-5 grid-rows-5 pointer-events-none z-0 opacity-40">
-                  {Array(25).fill(0).map((_, i) => (
-                    <div key={`bg-${i}`} className="border border-gray-300"></div>
-                  ))}
-                </div>
+  
+        {/* Tabuleiro */}
+        <div className="flex flex-col items-center">
+          <div 
+            role="grid"
+            aria-label="Tabuleiro do quebra-cabeça, grade de 5 por 5"
+            className="grid grid-cols-5 bg-slate-800 rounded-xl shadow-xl relative isolate"
+            style={{ width: "min(90vw, 400px)", height: "min(90vw, 400px)", border: "4px solid #334155" }}
+          >
+            {/* Background visual grid to guide the user */}
+            <div className="absolute inset-0 grid grid-cols-5 grid-rows-5 pointer-events-none z-0 opacity-40" aria-hidden="true">
+              {Array(25).fill(0).map((_, i) => (
+                <div key={`bg-${i}`} className="border border-slate-600"></div>
+              ))}
+            </div>
 
-                {tabuleiro.map((peca, index) => (
-                  <div 
-                    key={`slot-${index}`}
-                    onClick={() => handleTabuleiroClick(index)}
-                    onDragOver={handleDragOver}
-                    onDrop={(e) => handleDropBoard(e, index)}
-                    className={`relative w-full h-full cursor-pointer transition-colors z-10
-                      ${pecaSelecionada && !peca ? 'bg-orange-50' : 'hover:bg-gray-100'}
-                    `}
-                  >
-                    {!peca && <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40"><span className="text-gray-400 text-lg md:text-xl font-bold">{index + 1}</span></div>}
-                    {peca && (
-                      <div 
-                        draggable
-                        onDragStart={(e) => handleDragStartBoard(e, peca, index)}
-                        className="absolute inset-0 cursor-grab active:cursor-grabbing"
-                      >
+            {tabuleiro.map((peca, index) => {
+              const linha = Math.floor(index / 5) + 1;
+              const coluna = (index % 5) + 1;
+              const slotVazio = !peca;
+
+              return (
+                <button
+                  key={`slot-${index}`}
+                  role="gridcell"
+                  lang="pt-BR"
+                  aria-label={`Espaço ${index + 1}, Linha ${linha} Coluna ${coluna}. ${slotVazio ? (pecaSelecionada ? 'Toque para encaixar a peça selecionada' : 'Vazio') : `Contém a peça número ${peca}`}`}
+                  onClick={() => handleTabuleiroClick(index)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDropBoard(e, index)}
+                  className={`relative w-full h-full cursor-pointer transition-colors z-10 border-0 p-0 m-0 bg-transparent outline-none focus:ring-4 focus:ring-blue-500 focus:ring-inset
+                    ${pecaSelecionada && slotVazio ? 'bg-white/10' : 'hover:bg-slate-600/50'}
+                  `}
+                >
+                  {slotVazio && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40" aria-hidden="true">
+                      <span className="text-slate-400 text-lg md:text-xl font-bold">{index + 1}</span>
+                    </div>
+                  )}
+                  
+                  {!slotVazio && (
+                    <div 
+                      draggable
+                      onDragStart={(e) => handleDragStartBoard(e, peca, index)}
+                      className="absolute inset-0 cursor-grab active:cursor-grabbing"
+                      aria-hidden="true"
+                    >
+                      {animalSelecionado && (
                         <SvgPiece peca={peca} animalId={animalSelecionado} isBoard={true} />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <p className="text-gray-500 mt-6 text-sm font-medium text-center">Toque em uma peça ao lado e depois em um espaço, ou arraste-a!</p>
+                      )}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+              {/* Instruções */}
+              <InstructionsGame>
+                Toque em uma peça abaixo e depois em um espaço, ou arraste-a!
+              </InstructionsGame>
+
             </div>
 
             {/* Peças Disponíveis */}
-            <div className="flex-1 w-full bg-white p-4 md:p-6 rounded-2xl shadow-2xl flex flex-col max-w-md">
-              <h3 className="font-bold text-gray-700 mb-4 text-center text-lg border-b border-gray-100 pb-2">Peças Disponíveis ({pecasDisponiveis.length})</h3>
-              <div className="flex flex-wrap gap-4 justify-center max-h-[400px] overflow-y-auto p-2 content-start">
-                {pecasDisponiveis.map(peca => (
-                  <div
-                    key={peca.id}
-                    onClick={() => handlePecaClick(peca)}
-                    draggable
-                    onDragStart={(e) => handleDragStartPool(e, peca)}
-                    className={`cursor-grab active:cursor-grabbing transition-transform hover:scale-110 w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center
-                      ${pecaSelecionada?.id === peca.id ? 'ring-4 ring-orange-500 scale-110 rounded-lg bg-orange-50 shadow-md' : ''}
-                    `}
-                  >
-                    <SvgPiece peca={peca} animalId={animalSelecionado} isBoard={false} />
-                  </div>
-                ))}
+            <div 
+              role="group"
+              aria-label="Banco de peças disponíveis para encaixar"
+              className="flex-1 w-full bg-slate-800 p-4 rounded-2xl shadow-inner border-4 border-slate-700 flex flex-col"
+            >
+              <h3 className="font-bold text-slate-200 mb-3 text-center" aria-hidden="true">
+                Peças ({pecasDisponiveis.length})
+              </h3>
+              <div 
+                role="list"
+                aria-label={`${pecasDisponiveis.length} peças não utilizadas`}
+                className="flex flex-wrap gap-4 justify-center max-h-[400px] overflow-y-auto p-4 content-start"
+              >
+                {pecasDisponiveis.map(peca => {
+                  const estaSelecionada = pecaSelecionada?.id === peca.id;
+
+                  return (
+                    <div
+                      key={peca.id}
+                      draggable
+                      onDragStart={(e) => handleDragStartPool(e, peca)}
+                      className={`relative cursor-grab active:cursor-grabbing transition-transform hover:scale-105 w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-lg
+                        ${estaSelecionada ? 'ring-4 ring-yellow-400 scale-105 bg-white/10' : ''}
+                      `}
+                    >
+                      {/* Botão para acessibilidade via teclado/clique */}
+                      <button
+                        role="listitem"
+                        lang="pt-BR"
+                        aria-label={`Peça número ${peca.id}${estaSelecionada ? ', atualmente selecionada' : ''}`}
+                        onClick={() => handlePecaClick(peca)} 
+                        className="absolute inset-0 w-full h-full border-0 p-0 m-0 bg-transparent outline-none rounded-lg focus:ring-4 focus:ring-yellow-400 focus:ring-offset-2 z-10"
+                      />
+                      
+                      <div className="w-full h-full pointer-events-none z-0" aria-hidden="true">
+                        {animalSelecionado && (
+                          <SvgPiece peca={peca} animalId={animalSelecionado} isBoard={false} />
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
           </div>
-        </main>
+        </>
       )}
 
-      {(jogoFinalizado || desistiu) && animalSelecionado && (
+      {animalSelecionado && (
         <div className="flex flex-col items-center justify-center p-6 min-h-[80vh]">
-          {jogoFinalizado && (
-            <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-green-500 animate-pop-in">
+          {gameState === 'won' && (
+            <OverlayResultado
+              tipo="vitoria"
+              titulo="Você Venceu!"
+              subtitulo={
+                <>
+                  <p className="text-xl text-gray-700 mb-4">Você montou o {animaisData.find(a => a.id === animalSelecionado)?.nome} com sucesso!</p>
+                  <img src={getFullImageUrl(animalSelecionado)} alt="Completo" className="w-48 h-48 mx-auto rounded-xl shadow-md mb-8" />
+                </>
+              }
+              onReiniciar={backToMenu}
+              icon={
               <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                <Trophy size={40} className="text-green-500" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-10 w-10 text-green-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
               </div>
-              <h2 className="text-4xl font-extrabold text-green-600 mb-4">Parabéns!</h2>
-              <p className="text-xl text-gray-700 mb-4">Você montou o {animaisData.find(a => a.id === animalSelecionado)?.nome} com sucesso!</p>
-              <img src={getFullImageUrl(animalSelecionado)} alt="Completo" className="w-48 h-48 mx-auto rounded-xl shadow-md mb-8" />
-              <button
-                onClick={() => setStarted(false)}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-4 rounded-xl shadow-md text-lg transition-transform hover:scale-105 active:scale-95"
-              >
-                Jogar Outro
-              </button>
-            </div>
+            }
+            />
           )}
 
-          {desistiu && (
-            <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center border-t-8 border-red-500 animate-pop-in">
-              <h2 className="text-4xl font-extrabold text-red-600 mb-4">Ah não!</h2>
-              <p className="text-xl text-gray-700 mb-8">Você desistiu de montar o quebra cabeça.</p>
-              <button
-                onClick={() => setStarted(false)}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-4 rounded-xl shadow-md text-lg mb-3 transition-transform hover:scale-105 active:scale-95"
-              >
-                Tentar Outro
-              </button>
-            </div>
+          {gameState === "gaveUp" && (
+            <OverlayResultado
+              tipo="desistencia"
+              titulo="Ah não!"
+              subtitulo={
+                <>
+                  <p className="text-xl text-gray-700 mb-2">
+                    Você desistiu de montar o quebra cabeça.
+                  </p>
+                </>
+              }
+              onReiniciar={backToMenu}
+              icon={
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-10 w-10 text-red-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              }
+            />
           )}
         </div>
       )}
-    </div>
+  </PageContainer>
+  </div>
   );
 }

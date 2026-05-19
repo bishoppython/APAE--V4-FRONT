@@ -5,6 +5,7 @@ import confetti from "canvas-confetti";
 import { OverlayResultado } from "@/components/OverlayResultado";
 import MenuGame from "@/components/MenuGame";
 import HeaderGame from "@/components/HeaderGame";
+import { PageContainer } from "@/components/ui/page_components";
 
 const animaisData = [
   {
@@ -385,8 +386,7 @@ export default function AdivinhaAnimais() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-6 min-h-screen bg-gray-100">
-      <div className="min-h-screen bg-gray-50 font-poppins relative pb-24">
+      <div className="min-h-screen bg-white font-poppins relative pb-24">
         {/* Definindo a animação de shake inline para não precisar mexer no tailwind.config.js */}
         <style>
           {`
@@ -408,8 +408,10 @@ export default function AdivinhaAnimais() {
           }
         `}
         </style>
-
+            
+        <PageContainer className="w-full max-w-6xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-8">
         {gameState === "menu" && (
+          
           <MenuGame
             titulo="Adivinhe os Animais"
             subtitulo="Escolha a categoria, ouça o som e clique na imagem correta!"
@@ -417,59 +419,91 @@ export default function AdivinhaAnimais() {
             onIniciar={iniciarJogo}
             icones={
               <>
-                <span className="text-5xl">🦁</span>
-                <span className="text-5xl">🐘</span>
-                <span className="text-5xl">🐒</span>
+                <div className="flex items-center justify-center gap-3 md:gap-6 max-w-full overflow-hidden">
+                  <span className="text-3xl md:text-4xl select-none shrink">🦁</span>
+                  <span className="text-3xl md:text-4xl select-none shrink">🐘</span>
+                  <span className="text-3xl md:text-4xl select-none shrink">🐒</span>
+                </div>
               </>
             }
           >
-            <div className="grid grid-cols-2 gap-4">
-              {(["animais", "cores"] as const).map((cat) => (
-                <label
-                  key={cat}
-                  onClick={() => setCategoria(cat)}
-                  className={`flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all select-none ${
-                    categoria === cat
-                      ? "border-orange-500 bg-orange-50 transform scale-105 shadow-md"
-                      : "border-gray-200 hover:bg-gray-50 active:scale-95"
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    className="hidden"
-                    checked={categoria === cat}
-                    readOnly
-                  />
-                  <span
-                    className={`font-bold text-lg capitalize pointer-events-none ${
-                      categoria === cat ? "text-orange-700" : "text-gray-600"
+            <div 
+              role="radiogroup" 
+              aria-label="Escolha uma categoria de jogo"
+              className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 w-full"
+            >
+              {(["animais", "cores"] as const).map((cat) => {
+                const estaAtivo = categoria === cat;
+
+                return (
+                  <label
+                    key={cat}
+                    // aria-current avisa qual item está selecionado no momento
+                    aria-current={estaAtivo ? "true" : undefined}
+                    className={`w-full flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all select-none ${
+                      estaAtivo
+                        ? "border-orange-500 bg-orange-50 transform scale-105 shadow-md"
+                        : "border-gray-200 hover:bg-gray-50 active:scale-95"
                     }`}
                   >
-                    {cat}
-                  </span>
-                </label>
-              ))}
+                    <input
+                      type="radio"
+                      name="categoria-jogo"
+                      value={cat}
+                      checked={estaAtivo}
+                      onChange={() => setCategoria(cat)}
+                      className="sr-only"
+                      // aria-checked avisa se estiver ativo
+                      aria-checked={estaAtivo}
+                    />
+                    <span
+                      className={`font-bold text-lg capitalize pointer-events-none ${
+                        estaAtivo ? "text-orange-700" : "text-gray-600"
+                      }`}
+                    >
+                      {cat}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
+
           </MenuGame>
+          
         )}
 
         {gameState === "playing" && (
-          <main className="w-full max-w-5xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-24">
+          <>
             {/* Header */}
-            <HeaderGame titulo="Adivinhe a Imagem" onDesistir={handleGiveUp}>
+            <HeaderGame
+             titulo="Adivinhe a Imagem"
+             onDesistir={handleGiveUp}
+            >
               {/* Children */}
-              <span className="text-gray-600 font-medium">
-                Erros:{" "}
-                <span className="text-red-500 font-bold">
-                  {erros} / {MAX_ERROS}
-                </span>
-              </span>
-              <span className="text-gray-600 font-medium hidden sm:inline">
-                Progresso:{" "}
-                <span className="text-blue-600 font-bold">
-                  {dadosAtuais.length - animaisRestantes.length}
-                </span>
-              </span>
+              <div className="w-full flex flex-col sm:flex-row gap-2 sm:gap-4">
+                <div
+                  aria-live="polite" 
+                  aria-atomic="true"
+                  lang="pt-BR" 
+                  className="text-gray-600 font-medium"
+                >
+                  <span>Erros: </span>
+                  <span className="text-red-500 font-bold">
+                    {erros} de {MAX_ERROS}
+                  </span>
+                </div>
+
+                <div 
+                  aria-live="polite" 
+                  aria-atomic="true" 
+                  className="text-gray-600 font-medium sr-only sm:not-sr-only sm:inline-block"
+                >
+                  <span>Progresso: </span>
+                  <span className="text-blue-600 font-bold">
+                    {dadosAtuais.length - animaisRestantes.length}
+                  </span>
+                </div>
+              </div>
             </HeaderGame>
 
             {/* Content */}
@@ -525,7 +559,7 @@ export default function AdivinhaAnimais() {
                 </div>
               </div>
             )}
-          </main>
+          </>
         )}
 
         {gameState === "lost" && (
@@ -601,7 +635,7 @@ export default function AdivinhaAnimais() {
             }
           />
         )}
+        </PageContainer>
       </div>
-    </div>
   );
 }

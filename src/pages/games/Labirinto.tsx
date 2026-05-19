@@ -6,6 +6,7 @@ import { OverlayResultado } from "@/components/OverlayResultado";
 import MenuGame from "@/components/MenuGame";
 import HeaderGame from "@/components/HeaderGame";
 import InstructionsGame from "@/components/InstructionsGame";
+import { PageContainer } from "@/components/ui/page_components";
 
 const efeitoVitoria = new URL(
   "../../assets/sounds/efeitos/efeito-vitória.mp3",
@@ -641,7 +642,31 @@ export default function Labirinto() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center p-6 min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-white font-poppins relative pb-24">
+
+      <style>
+        {`
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+          }
+          .animate-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+          }
+          @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+          }
+          .animate-pop-in {
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+          }
+        `}
+      </style>
+      
+    <PageContainer className="w-full max-w-6xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-8">
+      
       
       {gameState === 'menu' && (
         <MenuGame
@@ -657,42 +682,53 @@ export default function Labirinto() {
             </>
           }
         >
-          <div className="grid grid-cols-2 gap-4 mb-8">
-            {[
-              { val: 10, label: 'Fácil' },
-              { val: 15, label: 'Médio' },
-              { val: 25, label: 'Difícil' },
-              { val: 38, label: 'Extremo' }
-            ].map((op) => (
-              <label 
-                key={op.val} 
-                onClick={() => setTamanho(op.val)} 
-                className={`flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all select-none ${
-                  tamanho === op.val 
-                    ? 'border-green-500 bg-green-50 transform scale-105 shadow-md' 
-                    : 'border-gray-200 hover:bg-gray-50 active:scale-95'
-                }`}
-              >
-                <input 
-                  type="radio" 
-                  className="hidden"
-                  checked={tamanho === op.val}
-                  readOnly 
-                />
-                
-                <span className={`font-bold text-lg pointer-events-none ${
-                  tamanho === op.val ? 'text-green-700' : 'text-gray-600'
-                }`}>
-                  {op.label}
-                </span>
-                <span className={`text-xs mt-1 pointer-events-none ${
-                  tamanho === op.val ? 'text-green-600 font-semibold' : 'text-gray-400'
-                }`}>
-                  {op.val}x{op.val}
-                </span>
-              </label>
-      ))}
-    </div>
+          <fieldset className="mb-8">
+            <legend className="sr-only">Selecione a dificuldade e tamanho do labirinto</legend>
+            
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { val: 10, label: 'Fácil' },
+                { val: 15, label: 'Médio' },
+                { val: 25, label: 'Difícil' },
+                { val: 38, label: 'Extremo' }
+              ].map((op) => {
+                const estaSelecionado = tamanho === op.val;
+
+                return (
+                  <label 
+                    key={op.val} 
+                    className={`flex flex-col items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all select-none
+                      focus-within:ring-2 focus-within:ring-green-500 focus-within:ring-offset-2
+                      ${
+                        estaSelecionado 
+                          ? 'border-green-500 bg-green-50 transform scale-105 shadow-md' 
+                          : 'border-gray-200 hover:bg-gray-50 active:scale-95'
+                      }`}
+                  >
+                    <input 
+                      type="radio" 
+                      name="tamanho_labirinto" 
+                      className="sr-only"
+                      checked={estaSelecionado}
+                      
+                      onChange={() => setTamanho(op.val)} 
+                    />
+                    
+                    <span className={`font-bold text-lg pointer-events-none ${
+                      estaSelecionado ? 'text-green-700' : 'text-gray-600'
+                    }`}>
+                      {op.label}
+                    </span>
+                    <span className={`text-xs mt-1 pointer-events-none ${
+                      estaSelecionado ? 'text-green-600 font-semibold' : 'text-gray-400'
+                    }`}>
+                      {op.val}x{op.val}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
   </MenuGame>
 )}     
 
@@ -704,20 +740,39 @@ export default function Labirinto() {
             onDesistir={handleGiveUp}
           >
             {/* Children */}
-            <span className="text-gray-600 font-medium">Movimentos: <span className="text-blue-600 font-bold">{moves}</span> 
-            <span className="text-sm text-gray-400">/ Ideal {minMoves}</span></span>
+            <div className="flex items-center text-gray-600 font-medium">
+            <div 
+              aria-live="polite" 
+              aria-atomic="true"
+              className="inline-block"
+            >
+              <span>Movimentos: </span>
+              <span className="text-blue-600 font-bold">{moves}</span>
+            </div>
+            <span className="text-sm text-gray-400 font-normal ml-1">
+              <span className="sr-only"> de um ideal de </span>
+              <span aria-hidden="true">/ Ideal </span>
+              {minMoves}
+            </span>
+          </div>
           </HeaderGame>
           
+          {/* Content */}
           <div 
             ref={containerRef}
             className="view mb-6 flex justify-center items-center w-full max-w-5xl h-[80vh]" 
             id="view"
+            role="region"
+            aria-label="Área do Labirinto"
           >
             <div className="labirinto bg-white p-3 md:p-4 shadow-xl rounded-2xl shrink-0" id="labirinto">
               <canvas 
                 ref={canvasRef}
-                className="border-[3px] border-gray-800 rounded-md bg-gray-50 block" 
-              ></canvas>
+                className="border-[3px] border-gray-800 rounded-md bg-gray-50 block"
+                role="img"
+                aria-label={`Mapa do labirinto interativo de tamanho ${tamanho} por ${tamanho}. Use as setas do teclado ou arraste o personagem para encontrar a saída.`}
+                tabIndex={0} 
+              />
             </div>
           </div>
 
@@ -768,6 +823,7 @@ export default function Labirinto() {
         />
       )}
 
+    </PageContainer>
     </div>
   );
 }

@@ -4,6 +4,8 @@ import confetti from "canvas-confetti";
 import MenuGame from "@/components/MenuGame";
 import { OverlayResultado } from "@/components/OverlayResultado";
 import HeaderGame from "@/components/HeaderGame";
+import { PageContainer } from "@/components/ui/page_components";
+
 
 interface Palavra {
     palavra: string;
@@ -251,142 +253,219 @@ export default function Soletrando() {
 
 
     return (
-        <div className="min-h-screen bg-gray-50 font-poppins relative pb-24">
-                <main className="w-full max-w-5xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8">
+        <div className="min-h-screen bg-white font-poppins relative pb-24">
 
-                    {gameState === 'menu' && (
-                        <MenuGame
-                            titulo="Soletrando"
-                            subtitulo="Escreva o nome correto de cada imagem que aparecer!"
-                            onIniciar={iniciarJogo}
-                            corDestaque="indigo"
-                            icones={
-                                <>
-                                <span className="text-4xl font-extrabold text-red-500">A</span>
-                                <span className="text-4xl font-extrabold text-blue-500">B</span>
-                                <span className="text-4xl font-extrabold text-yellow-500">C</span>
-                                </>
-                            }  
-                            /> 
-                        )
-                    }
+            <style>
+            {`
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            .animate-shake {
+                animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            }
+            @keyframes popIn {
+                0% { transform: scale(0.5); opacity: 0; }
+                80% { transform: scale(1.1); opacity: 1; }
+                100% { transform: scale(1); opacity: 1; }
+            }
+            .animate-pop-in {
+                animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            }
+            `}
+        </style>
 
-                    {gameState === 'playing' && (
-                    <>
-                        {/* Header */}
-                        <HeaderGame
-                            titulo="Soletrando" 
-                            onDesistir={handleGiveUp}
+            <PageContainer className="w-full max-w-6xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-8">
+                {gameState === 'menu' && (
+                    <MenuGame
+                        titulo="Soletrando"
+                        subtitulo="Escreva o nome correto de cada imagem que aparecer!"
+                        onIniciar={iniciarJogo}
+                        corDestaque="indigo"
+                        icones={
+                            <>
+                            <span className="text-4xl font-extrabold text-red-500">A</span>
+                            <span className="text-4xl font-extrabold text-blue-500">B</span>
+                            <span className="text-4xl font-extrabold text-yellow-500">C</span>
+                            </>
+                        }  
+                        /> 
+                    )
+                }
+
+                {gameState === 'playing' && (
+                <>
+                    {/* Header */}
+                    <HeaderGame
+                        titulo="Soletrando" 
+                        onDesistir={handleGiveUp}
+                        >
+                    {/* Children */}
+                    <div
+                        aria-live="polite" 
+                        aria-atomic="true" 
+                        className="text-gray-600 font-medium"
+                        >
+                        <span>Pontuação:{" "}</span>
+                        <span className="text-red-500 font-bold">
+                            {pontos}
+                        </span>
+                    </div>
+                    </HeaderGame>
+
+                    {/* Imagem */}
+                    {palavraAtual && (
+                        <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl p-4 mb-8 mt-2 md:mt-4 relative">
+                            <button
+                                onClick={() => playAudio(`/audio/soletrando/${palavraAtual.palavra}.mp3`)}
+                                aria-label="Ouvir som da palavra novamente"
+                                className="w-full bg-transparent border-0 p-0 m-0 outline-none rounded-xl focus:ring-4 focus:ring-orange-500 focus:ring-offset-2 transition-shadow block overflow-hidden"
                             >
-                        {/* Children */}
-                            <span className="text-gray-600 font-medium">Pontuação: <span className="text-blue-600 font-bold">{pontos}</span></span>
-                        </HeaderGame>
-
-                        {/* Imagem */}
-                        {palavraAtual && (
-                            <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl p-4 mb-8 mt-2 md:mt-4 relative">
-                                <img
-                                    className="w-full h-80 sm:h-[400px] md:h-[500px] lg:h-[600px] object-cover rounded-xl transition-all"
-                                    src={getImageUrl(palavraAtual.imagem)}
-                                    alt={`Palavra: ${palavraAtual.palavra}`}
-                                    onClick={() => playAudio(`/audio/soletrando/${palavraAtual.palavra}.mp3`)}
-                                />
-                            </div>
-                        )}
+                            <img
+                                className="w-full h-80 sm:h-[400px] md:h-[500px] lg:h-[600px] object-cover rounded-xl transition-all"
+                                src={getImageUrl(palavraAtual.imagem)}
+                                alt={`Palavra: ${palavraAtual.palavra}`}
+                                onClick={() => playAudio(`/audio/soletrando/${palavraAtual.palavra}.mp3`)}
+                            />
+                            </button>
+                        </div>
+                    )}
 
 
 
-                        {/* Quadros para formar a palavra */}
-                        {palavraAtual && (
-                            <div className="flex flex-wrap gap-2 sm:gap-4 justify-center mt-12 sm:mt-16 mb-14 w-full px-4">
-                                {(() => {
-                                    let idxAlfabetico = 0;
-                                    return palavraAtual.palavra.split("").map((letraOriginal, index) => {
-                                        if (letraOriginal === "-") {
-                                            return <div key={`break-${index}`} className="basis-full h-0"></div>;
-                                        }
+                    {palavraAtual && (
+                        <div 
+                            role="group"
+                            aria-label="Palavra sendo montada"
+                            className="flex flex-wrap gap-2 sm:gap-4 justify-center mt-12 sm:mt-16 mb-14 w-full px-4 max-w-full box-border"
+                        >
+                            {(() => {
+                                let idxAlfabetico = 0;
+                                const tamanhoPalavra = palavraAtual.palavra.replace(/-/g, "").length;
 
-                                        const letraDigitada = tentativa[idxAlfabetico];
-                                        idxAlfabetico++;
+                                return palavraAtual.palavra.split("").map((letraOriginal, index) => {
+                                    if (letraOriginal === "-") {
+                                        return <div key={`break-${index}`} className="basis-full h-0" aria-hidden="true"></div>;
+                                    }
 
-                                        return (
-                                            <div
-                                                key={index}
-                                                className={`w-12 h-16 sm:w-16 sm:h-20 md:w-20 md:h-24 bg-white border-b-8 shadow-md flex items-center justify-center text-3xl sm:text-5xl font-black uppercase rounded-t-xl transition-all duration-300 ${letraDigitada ? 'border-green-500 scale-110 -translate-y-2 text-green-600' : 'border-gray-300 text-gray-800'}`}
-                                            >
-                                                {letraDigitada || ""}
-                                            </div>
-                                        );
-                                    });
-                                })()}
-                            </div>
-                        )}
+                                    const letraDigitada = tentativa[idxAlfabetico];
+                                    const posicaoAtual = idxAlfabetico + 1;
+                                    idxAlfabetico++;
 
-                        {/* Letras para selecionar */}
-                        {palavraAtual && (
-                            <div className="flex flex-wrap justify-center gap-3 mb-6">
-                                {letras.map((letraObj, index) => {
-                                    const usado = letrasUsadas.includes(index);
                                     return (
-                                        <button
+                                        <div
                                             key={index}
-                                            disabled={usado}
-                                            onClick={() => handleLetterClick(letraObj, index)}
-                                            className={`w-14 h-14 md:w-16 md:h-16 text-2xl font-bold rounded-lg border-2 shadow-sm transition-all flex items-center justify-center
-                                        ${usado
-                                                    ? "bg-gray-200 border-gray-300 text-gray-400 cursor-not-allowed scale-95 opacity-50"
-                                                    : "bg-green-500 border-green-600 text-white hover:bg-green-400 hover:-translate-y-1 hover:shadow-md active:scale-95 cursor-pointer"
-                                                }`}
+                                            role="img"
+                                            lang="pt-BR"
+                                            aria-label={`Espaço ${posicaoAtual} de ${tamanhoPalavra}: ${letraDigitada ? `Letra preenchida, ${letraDigitada}` : 'Vazio'}`}
+                                            className={`w-12 h-16 sm:w-16 sm:h-20 md:w-20 md:h-24 bg-white border-b-8 shadow-md flex items-center justify-center text-3xl sm:text-5xl font-black uppercase rounded-t-xl transition-all duration-300 ${letraDigitada ? 'border-green-500 text-green-600' : 'border-gray-300 text-gray-800'}`}
                                         >
-                                            {letraObj.letra.toUpperCase()}
-                                        </button>
+                                            <span aria-hidden="true">
+                                                {letraDigitada || ""}
+                                            </span>
+                                        </div>
                                     );
-                                })}
-                            </div>
-                        )}
+                                });
+                            })()}
+                        </div>
+                    )}
 
-                        {/* Status de tentativas (só aparece se estiver jogando) */}
-                        {palavraAtual && (
+                    {palavraAtual && (
+                        <div 
+                            role="group"
+                            aria-label="Teclado virtual de letras"
+                            className="flex flex-wrap justify-center gap-3 mb-6 w-full max-w-full box-border px-1"
+                        >
+                            {letras.map((letraObj, index) => {
+                                const usado = letrasUsadas.includes(index);
+                                const letraMaiuscula = letraObj.letra.toUpperCase();
+
+                                return (
+                                    <button
+                                        key={index}
+                                        disabled={usado}
+                                        onClick={() => handleLetterClick(letraObj, index)}
+                                        lang="pt-BR"
+                                        aria-label={`Letra ${letraMaiuscula}${usado ? ', já utilizada' : ''}`}
+                                        className={`w-14 h-14 md:w-16 md:h-16 text-2xl font-bold rounded-lg border-2 shadow-sm transition-all flex items-center justify-center outline-none focus:ring-4 focus:ring-green-500 focus:ring-offset-2
+                                        ${usado
+                                            ? "bg-gray-200 border-gray-300 text-gray-400 cursor-not-allowed opacity-50"
+                                            : "bg-green-500 border-green-600 text-white hover:bg-green-400 hover:shadow-md cursor-pointer"
+                                        }`}
+                                    >
+                                        <span aria-hidden="true">
+                                            {letraMaiuscula}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {/* Status de tentativas (só aparece se estiver jogando) */}
+                    {palavraAtual && (
+                        <div
+                            role="status"
+                            aria-live="polite"
+                            aria-atomic="true"
+                            lang="pt-BR"
+                            className="mt-2"
+                        >
                             <p className="font-semibold text-gray-700 text-lg mb-4">
                                 Tentativas restantes: {maxTentativas - tentativas}
                             </p>
-                        )}
+                        </div>
+                    )}
 
-                        {/* Feedback (correto, errado, e palavra digitada) */}
-                        <div className="h-16 flex items-center justify-center">
-                            <p className={`text-2xl font-bold transition-all ${feedback.tipo === 'correto' ? 'text-green-500 animate-bounce' :
-                                feedback.tipo === 'errado' ? 'text-red-500 animate-pulse' :
-                                    'text-gray-800'
-                                }`}>
+                    {/* Feedback (correto, errado, e palavra digitada) */}
+                    <div 
+                        className="h-16 flex items-center justify-center"
+                        role="status"
+                        aria-live="assertive"
+                        aria-atomic="true"
+                    >
+                        {feedback.texto && (
+                            <p 
+                                lang="pt-BR"
+                                className={`text-2xl font-bold transition-all ${
+                                    feedback.tipo === 'correto' 
+                                        ? 'text-green-500 animate-bounce' 
+                                        : feedback.tipo === 'errado' 
+                                            ? 'text-red-500 animate-pulse' 
+                                            : 'text-gray-800'
+                                }`}
+                            >
                                 {feedback.texto}
                             </p>
-                        </div>
-                        </>
                         )}
+                    </div>
+                    </>
+                )}
 
 
-                    {/* Botão de Tentar Novamente na Tela Final */}
-                    {gameState === 'gaveUp' && (
-                        <OverlayResultado
-                            tipo="vitoria"
-                            titulo="Fim de Jogo!"
-                            subtitulo={
-                                <>
+                {/* Botão de Tentar Novamente na Tela Final */}
+                {gameState === 'gaveUp' && (
+                    <OverlayResultado
+                        tipo="vitoria"
+                        titulo="Fim de Jogo!"
+                        subtitulo={
+                            <>
                                 <p>Parabéns! Você alcançou <span className="font-bold text-2xl text-green-600">{pontos}</span> pontos.</p>
                                 <p className="text-md text-gray-500 mb-8">Vamos tentar uma nova rodada e bater esse recorde?</p>
-                                </>
-                            }
-                            onReiniciar={backToMenu} 
-                            icon={
-                                <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                                    </svg>
-                                </div>
-                            }
-                            />
-                        )}
-                </main>    
+                            </>
+                        }
+                        onReiniciar={backToMenu} 
+                        icon={
+                            <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                </svg>
+                            </div>
+                        }
+                        />
+                    )}
+                </PageContainer>    
         </div>
     )
 }

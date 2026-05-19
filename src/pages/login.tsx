@@ -1,10 +1,11 @@
 import { LoginForm } from "@/components/forms/login_form";
 import { Button } from "@/components/ui/button";
+import { PageContainer } from "@/components/ui/page_components";
 import { Puzzle } from "lucide-react";
 
 export default function Login() {
   return (
-    <main className="flex w-full justify-between min-h-screen">
+    <PageContainer className="flex w-full justify-between min-h-screen">
 
       <section className="flex flex-1 flex-col items-center justify-center bg-white">
         <h1 className="text-[42px] font-bold text-center">NeuroKids</h1>
@@ -35,6 +36,6 @@ export default function Login() {
           <img src="LoginIMG.svg" className="w-full h-screen py-6 object-cover" alt="Login Background" />
         </div>
       </aside>
-    </main>
+    </PageContainer>
   );
 }

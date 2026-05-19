@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, type JSX } from "react";
-import { Link } from "react-router-dom";
-import { Trophy, Info } from "lucide-react";
 import confetti from "canvas-confetti";
 import { OverlayResultado } from "@/components/OverlayResultado";
 import HeaderGame from "@/components/HeaderGame";
 import InstructionsGame from "@/components/InstructionsGame";
+import { PageContainer } from "@/components/ui/page_components";
+import MenuGame from "@/components/MenuGame";
 
 // Importa efeitos sonoros
 const efeitoAcerto = new URL("../../assets/sounds/efeitos/efeito-acerto.mp3", import.meta.url).href;
@@ -237,7 +237,7 @@ export default function EncaixeFormas() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-poppins relative pb-24 overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 font-poppins relative pb-24">
       <style>
         {`
           @keyframes shake {
@@ -259,40 +259,52 @@ export default function EncaixeFormas() {
         `}
       </style>
 
+      <PageContainer className="w-full max-w-6xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-8">
       {gameState === 'menu' && (
-        <div className="flex flex-col items-center justify-center p-6 min-h-screen">
-          <div className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-sm w-full mx-4 border-t-8 border-purple-500">
-            <div className="flex justify-center mb-6 space-x-2">
-              {formasData[0].renderSVG({ className: "w-12 h-12 text-red-500" })}
-              {formasData[1].renderSVG({ className: "w-12 h-12 text-blue-500" })}
-              {formasData[2].renderSVG({ className: "w-12 h-12 text-yellow-500" })}
-            </div>
-            <h1 className="text-3xl font-bold mb-6 text-gray-800">Encaixe as Formas</h1>
-            <p className="text-gray-600 mb-8 font-medium">Arraste as formas para seus lugares corretos!</p>
-            <button
-              onClick={iniciarJogo}
-              className="bg-purple-500 hover:bg-purple-600 text-white text-xl font-bold py-4 px-8 rounded-xl shadow-lg cursor-pointer transition transform hover:scale-105 active:scale-95 w-full flex items-center justify-center gap-2"
-            >
-              Jogar Agora
-            </button>
-          </div>
-        </div>
+        <MenuGame
+          titulo="Encaixe as Formas"
+          subtitulo="Arraste as formas para seus lugares corretos!"
+          onIniciar={iniciarJogo}
+          corDestaque="indigo"
+          icones={
+              <>
+              <div className="flex justify-center mb-6 space-x-2">
+                {formasData[0].renderSVG({ className: "text-3xl md:text-5xl select-none shrink w-12 h-12 text-red-500" })}
+                {formasData[1].renderSVG({ className: "text-3xl md:text-5xl select-none shrink w-12 h-12 text-blue-500" })}
+                {formasData[2].renderSVG({ className: "text-3xl md:text-5xl select-none shrink w-12 h-12 text-yellow-500" })}
+              </div>
+              </>
+          }  
+          />
       )}
-
+      
       {gameState === 'playing' && (
-        <main className="w-full max-w-5xl mx-auto px-4 flex flex-col items-center pt-4 md:pt-8 pb-24">
+            <>
               {/* Header */}
               <HeaderGame
                 titulo="Arraste as Formas" 
                 onDesistir={handleGiveUp}
               >
                 {/* Children */}
-                <span className="text-gray-600 font-medium">
-                  Erros: <span className="text-red-500 font-bold">{erros} / {MAX_ERROS}</span>
-                </span>
-                <span className="text-gray-600 font-medium hidden sm:inline">
-                  Progresso: <span className="text-blue-600 font-bold">{encaixadas.length} / {formasData.length}</span>
-                </span>
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                  <div 
+                    aria-live="polite" 
+                    aria-atomic="true" 
+                    className="text-gray-600 font-medium"
+                  >
+                    <span>Erros: </span>
+                    <span className="text-red-500 font-bold">{erros} de {MAX_ERROS}</span>
+                  </div>
+
+                  <div 
+                    aria-live="polite" 
+                    aria-atomic="true" 
+                    className="text-gray-600 font-medium sr-only sm:not-sr-only sm:inline-block"
+                  >
+                    <span>Progresso: </span>
+                    <span className="text-blue-600 font-bold">{encaixadas.length} de {formasData.length}</span>
+                  </div>
+                </div>
               </HeaderGame>
 
               {/* Board (Área dos encaixes/sombras) */}
@@ -364,40 +376,91 @@ export default function EncaixeFormas() {
               <InstructionsGame>
                 Toque, segure e arraste as formas coloridas para encaixá-las em seus lugares no mural.
               </InstructionsGame>
-        </main>
-      )}
-
-      
-        
-          {gameState === 'lost' && (
-            <OverlayResultado
-              tipo="derrota"
-              titulo="Fim de Jogo!"
-              subtitulo={<>Você atingiu o limite de <span className="font-bold text-red-600 text-2xl">{MAX_ERROS}</span> erros.</>}
-              onReiniciar={backToMenu}
-              icon={<span className="mx-auto w-20 h-20 text-5xl font-bold text-red-600 bg-red-100 rounded-full flex items-center justify-center mb-6">X</span>}
-            />
+            </>
           )}
 
-          {gameState === 'gaveUp' && (
-            <OverlayResultado
-              tipo="desistencia"
-              titulo="Você Desistiu!"
-              subtitulo={<>"Que pena! Você chegou a encaixar <span className="font-bold text-2xl text-orange-600">{encaixadas.length}</span> formas."</>}
-              onReiniciar={backToMenu}
-              icon={<Info size={40} className="text-orange-500" />}
-            />
-          )}
+        {gameState === "lost" && (
+          <OverlayResultado
+            tipo="derrota"
+            titulo="Fim de Jogo!"
+            subtitulo={
+              <>
+                Você atingiu o limite de{" "}
+                <span className="font-bold text-red-600 text-2xl">
+                  {MAX_ERROS}
+                </span>{" "}
+                erros.
+              </>
+            }
+            onReiniciar={backToMenu}
+            icon={
+              <span className="mx-auto w-20 h-20 text-5xl font-bold text-red-600 bg-red-100 rounded-full flex items-center justify-center mb-6">
+                X
+              </span>
+            }
+          />
+        )}
 
-          {gameState === 'won' && (
-            <OverlayResultado
-              tipo="vitoria"
-              titulo="Você Venceu!"
-              subtitulo="Parabéns! Você completou o mural com sucesso."
-              onReiniciar={backToMenu}
-              icon={<Trophy size={40} className="text-green-500"/>}
-            />
-          )}
+        {gameState === "gaveUp" && (
+          <OverlayResultado
+            tipo="desistencia"
+            titulo="Você desistiu!"
+            subtitulo={
+              <>
+                Que pena! Você chegou a encaixar{" "}
+                <span className="font-bold text-2xl text-orange-600">
+                  {encaixadas.length}
+                </span>{" "}
+                formas.
+              </>
+            }
+            onReiniciar={backToMenu}
+            icon={
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-10 w-10 text-red-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+            }
+          />
+        )}
+
+          {gameState === "won" && (
+          <OverlayResultado
+            tipo="vitoria"
+            titulo="Você Venceu!"
+            subtitulo="Parabéns! Você completou o mural com sucesso."
+            onReiniciar={backToMenu}
+            icon={
+              <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-10 w-10 text-green-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+            }
+          />
+        )}
+      </PageContainer>
     </div>
   );
 }

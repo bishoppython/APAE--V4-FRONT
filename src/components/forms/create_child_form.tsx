@@ -75,55 +75,56 @@ function ChildRegistrationForm() {
                     <DialogTitle className="text-2xl">Cadastro da criança</DialogTitle>
                 </DialogHeader>
 
-                <FormContainer onSubmit={handleSubmit(onSubmit)}>
-                    <FormFieldGroup>
-                        <FormField
-                            control={control}
-                            name="childName"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nome da criança</FormLabel>
-                                    <Input
-                                        {...field}
-                                        placeholder="Insira o nome da criança"
-                                        type="text"
-                                    />
-                                    <FormMessageReserved />
-                                </FormItem>
-                            )}
-                        />
+            <FormContainer onSubmit={handleSubmit(onSubmit)}>
+                <FormFieldGroup>
+                    <FormField
+                        control={control}
+                        name="childName"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Nome da criança</FormLabel>
+                                <Input
+                                    {...field}
+                                    placeholder="Insira o nome da criança"
+                                    type="text"
+                                />
+                                <FormMessageReserved />
+                            </FormItem>
+                        )}
+                    />
 
-                        <FormField
-                            control={control}
-                            name="guardianEmail"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>E-mail do responsável</FormLabel>
-                                    <Input
-                                        {...field}
-                                        placeholder="Insira o e-mail do responsável"
-                                        type="email"
-                                    />
-                                    <FormMessageReserved />
-                                </FormItem>
-                            )}
-                        />
+                    <FormField
+                        control={control}
+                        name="guardianEmail"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>E-mail do responsável</FormLabel>
+                                <Input
+                                    {...field}
+                                    placeholder="Insira o e-mail do responsável"
+                                    type="email"
+                                />
+                                <FormMessageReserved />
+                            </FormItem>
+                        )}
+                    />
 
-                        <FormField
-                            control={control}
-                            name="guardianPhone"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Número do responsável</FormLabel>
-                                    <Input
-                                        {...field}
-                                        placeholder="(00) 00000-0000"
-                                        type="tel"
-                                    />
-                                    <FormMessageReserved />
-                                </FormItem>
-                            )}
-                        />
+                    <FormField
+                        control={control}
+                        name="guardianPhone"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Número do responsável</FormLabel>
+                                <Input
+                                    {...field}
+                                    placeholder="(00) 00000-0000"
+                                    type="tel"
+                                />
+                                <FormMessageReserved />
+                            </FormItem>
+                        )}
+                    />
+
 
                         <FormField
                             control={control}
@@ -183,6 +184,7 @@ function ChildRegistrationForm() {
                 </FormContainer>
             </DialogContent>
         </Dialog>
+
     )
 }
 

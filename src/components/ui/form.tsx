@@ -56,7 +56,7 @@ export function FormField<
 export function FormContainer({ children, className, ...props }: React.ComponentProps<'form'>) {
     return (
         <form
-            className={cn("flex flex-col items-center gap-2", className)}
+            className={cn("flex flex-col items-center gap-4 w-full max-w-[95%] md:max-w-4xl mx-auto p-4 md:p-10 bg-white rounded-3xl shadow-sm", className)}
             {...props}
         >
             {children}
@@ -67,7 +67,7 @@ export function FormContainer({ children, className, ...props }: React.Component
 export function FormFieldGroup({ children, className, ...props }: React.ComponentProps<'form'>) {
     return (
         <section
-            className={cn("grid grid-cols-1 xl:grid-cols-2 gap-x-10 gap-y-2", className)}
+            className={cn("grid grid-cols-1 md:grid-cols-2 gap-4 w-full ", className)}
             {...props}
         >
             {children}
@@ -78,7 +78,7 @@ export function FormFieldGroup({ children, className, ...props }: React.Componen
 export function FormItem({ children, className, ...props }: React.ComponentProps<'div'>) {
     return (
         <div
-            className={cn("w-full space-y-2", className)}
+            className={cn("w-full flex flex-col gap-1.5 group transition-all", className)}
             {...props}
         >
             {children}
@@ -92,7 +92,7 @@ export function FormLabel({ children, className, ...props }: React.ComponentProp
     return (
         <label
             htmlFor={fieldId}
-            className={cn("text-xl font-medium text-foreground", className)}
+            className={cn("text-sm md:text-[15px] font-semibold text-slate-700 dark:text-slate-300 tracking-tight w-full", className)}
             {...props}
         >
             {children}
@@ -114,7 +114,7 @@ export function FormMessage({ children, className, ...props }: React.ComponentPr
             role="alert"
             aria-live="polite"
             className={cn(
-                "mt-1 text-lg font-medium text-red-500",
+                "mt-1 min-h-[1.25rem] text-xs md:text-sm font-medium text-red-500 transition-all animate-in fade-in slide-in-from-top-1 w-full",
                 className
             )}
             {...props}
@@ -134,7 +134,7 @@ export function FormMessageReserved({ children, className, ...props }: React.Com
             role={error ? "alert" : undefined}
             aria-live={error ? "polite" : undefined}
             className={cn(
-                "mt-1 min-h-7 text-xl font-normal text-red-500",
+                "mt-1 min-h-6 md:min-h-7 text-base md:text-xl font-normal text-red-500 transition-all w-full",
                 !error && "invisible",
                 className
             )}
@@ -163,7 +163,7 @@ export function Input({ className, type, ...props }: React.ComponentProps<'input
                 aria-describedby={error ? errorId : undefined}
                 data-slot="input"
                 className={cn(
-                    'bg-secondary/30 text-xl text-secondary-foreground rounded-[1.25rem] w-140 h-16 px-10',
+                    'bg-secondary/30 text-xl text-secondary-foreground rounded-[1.25rem] w-full h-16 px-10',
                     'focus:outline-none focus:ring-3 focus:ring-secondary/60',
                     error && 'ring-2 ring-red-500',
                     className
@@ -207,7 +207,8 @@ export function Select({
         <SelectPrimitive.Root {...props}>
             <SelectPrimitive.Trigger
                 className={cn(
-                    'flex items-center justify-between gap-6 bg-secondary/30 text-xl text-secondary-foreground rounded-[1.25rem] w-140 h-16 px-8',
+                    'flex flex-row items-center justify-between bg-secondary/30 rounded-[1.25rem] w-full h-16 px-6 md:px-10',
+                    'text-lg md:text-xl text-secondary-foreground font-normal',
                     'focus:outline-none focus:ring-3 focus:ring-secondary/60 transition-all text-left',
                     className
                 )}
