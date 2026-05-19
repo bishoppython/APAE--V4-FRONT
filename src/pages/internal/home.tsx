@@ -12,8 +12,8 @@ import {
   CarouselDescription,
 } from "@/components/ui/carousel";
 
-import controle from "../assets/images/controle.png";
-import livro from "../assets/images/livro.png";
+import controle from "@/assets/images/controle.png";
+import livro from "@/assets/images/livro.png";
 
 export default function Home() {
   const GAMES_DATA = [
@@ -100,15 +100,14 @@ export default function Home() {
       .replace(/\s+/g, "-") // Espaços por hífen
       .replace(/[^a-z0-9\-]/g, ""); // Remove pontuação como '?'
 
-    return new URL(`../assets/images/${folder}/${name}.png`, import.meta.url)
+    return new URL(`../../assets/images/${folder}/${name}.png`, import.meta.url)
       .href;
   };
 
   return (
-    <PageContainer className="w-full overflow-x-hidden">
+    <PageContainer>
       <CarouselHeader
         id="jogos"
-        className="mt-10 md:mt-16"
       >
         <CarouselIcon src={controle} />
         <CarouselTitle className="bg-linear-to-r from-[#00C4CC] to-[#8B3DFF] text-transparent bg-clip-text">
